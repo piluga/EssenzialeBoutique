@@ -2,7 +2,7 @@ let FIREBASE_URL = localStorage.getItem("gestionale_firebase_url") || "";
 
 // 🗄️ DATABASE INDEXEDDB
 const DB_NAME = 'CassaPWA_DB';
-const DB_VERSION = 6;
+const DB_VERSION = 7;
 let db;
 
 function initDB() {
@@ -25,7 +25,11 @@ function initDB() {
             if (!db.objectStoreNames.contains('chiusure')) {
                 db.createObjectStore('chiusure', { keyPath: 'data_chiusura' });
             }
-            // ----------------------------------------------
+
+            // --- NUOVO STORE PER LE GIFT CARD ---
+            if (!db.objectStoreNames.contains('giftcards')) {
+                db.createObjectStore('giftcards', { keyPath: 'codice' });
+            }
 
             let storeClienti;
             if (!db.objectStoreNames.contains('clienti')) { storeClienti = db.createObjectStore('clienti', { keyPath: 'scheda' }); } else { storeClienti = tx.objectStore('clienti'); }
@@ -487,7 +491,6 @@ window.confermaVendita = async function (riscattaBonus) {
         pagato = 0; // Contabilmente il cliente non paga nulla
         salvaVoucherCloud({ codice: codiceVoucherGenerato, importo: importoVoucherGenerato, dataEmissione: getOggiString() });
     }
-    // ----------------------------
 
     // --- RESET TESTI MODALE ESITO ---
     let titoloModale = document.getElementById('titolo-modal-esito');
@@ -590,22 +593,38 @@ window.confermaVendita = async function (riscattaBonus) {
         }))
     };
 
-    // 🔥 GESTIONE INVENTARIO E BRUCIATURA VOUCHER USATI
-    let txMag = db.transaction(['magazzino', 'vouchers'], 'readwrite');
+    // 🔥 GESTIONE INVENTARIO, BRUCIATURA VOUCHER E SCALO GIFT CARD
+    let txMag = db.transaction(['magazzino', 'vouchers', 'giftcards'], 'readwrite');
     let storeMag = txMag.objectStore('magazzino');
     let storeVou = txMag.objectStore('vouchers');
+    let storeGC = txMag.objectStore('giftcards');
 
     for (let item of carrello) {
         if (item.categoria === "VOUCHER") {
-            storeVou.delete(item.codice); // Elimina il voucher per impedirne il riutilizzo
+            storeVou.delete(item.codice); // Brucia il voucher
             eliminaVoucherCloud(item.codice);
+        } else if (item.is_giftcard_uso) {
+            // SCALO CREDITO GIFT CARD
+            let reqGC = storeGC.get(item.codice);
+            reqGC.onsuccess = function () {
+                if (reqGC.result) {
+                    let gc = reqGC.result;
+                    gc.saldo -= Math.abs(item.prezzo); // Sottraiamo l'importo appena usato in cassa
+                    if (gc.saldo <= 0.01) { // Salvagente per arrotondamenti
+                        gc.saldo = 0;
+                        gc.stato = "ESAURITA";
+                    }
+                    storeGC.put(gc);
+                    if (typeof salvaGiftCardCloud === "function") salvaGiftCardCloud(gc);
+                }
+            };
         } else if (item.is_reso && item.reso_stato === 'RIVENDIBILE') {
             // Carico Reso: la merce intatta torna a scaffale
             let req = storeMag.get(item.codice_originale || item.codice);
             req.onsuccess = function () {
                 if (req.result) { req.result.giacenza += item.qta; storeMag.put(req.result); }
             }
-        } else if (!item.is_reso && item.codice !== 'PUNTI' && !item.codice.startsWith('MAN-') && !item.codice.startsWith('REP-')) {
+        } else if (!item.is_reso && item.codice !== 'PUNTI' && !item.codice.startsWith('MAN-') && !item.codice.startsWith('REP-') && !item.is_giftcard) {
             // Scarico Vendita
             let req = storeMag.get(item.codice);
             req.onsuccess = function () {
@@ -631,6 +650,30 @@ window.confermaVendita = async function (riscattaBonus) {
             }
         }
     }
+
+    // ==========================================
+    // --- EMISSIONE GIFT CARD ---
+    // ==========================================
+    let giftCardsDaStampare = carrello.filter(item => item.is_giftcard);
+    giftCardsDaStampare.forEach((gcItem, index) => {
+        let nuovaGC = {
+            codice: gcItem.codice,
+            importoIniziale: gcItem.prezzo,
+            saldo: gcItem.prezzo,
+            dataEmissione: getOggiString(),
+            scadenza: getScadenzaGiftCard(),
+            stato: "ATTIVA"
+        };
+
+        let txGC = db.transaction('giftcards', 'readwrite');
+        txGC.objectStore('giftcards').put(nuovaGC);
+        if (typeof salvaGiftCardCloud === "function") salvaGiftCardCloud(nuovaGC);
+
+        // Ritarda la stampa della Gift Card di 3 secondi per dare il tempo
+        // all'operatore di strappare prima lo scontrino di cassa standard
+        setTimeout(() => stampaTicketGiftCard(nuovaGC), 3000 + (index * 2000));
+    });
+    // ==========================================
 
     await salvaVendita(recordVendita);
     inviaVenditaLive(recordVendita);
@@ -4051,41 +4094,79 @@ function getProdottoDaMagazzino(codice) {
 // 🎟️ MOTORE VOUCHER E BUONI RESO
 // ==========================================
 
-window.applicaVoucherCassa = function () {
+window.applicaVoucherCassa = async function () {
     let inputCampo = document.getElementById('cassa-voucher-input');
-    let codice = inputCampo.value.trim();
+    let codice = inputCampo.value.trim().toUpperCase();
     if (!codice) return;
 
-    let tx = db.transaction('vouchers', 'readonly');
-    let store = tx.objectStore('vouchers');
-    let req = store.get(codice);
+    // Evita di inserire lo stesso buono o carta due volte
+    let giaInserito = carrello.find(i => i.codice === codice);
+    if (giaInserito) {
+        mostraAvvisoModale("Questo codice è già presente nello scontrino attuale.");
+        return;
+    }
 
-    req.onsuccess = function () {
-        if (req.result) {
-            let v = req.result;
-
-            // Evita di inserire lo stesso voucher due volte nello stesso scontrino
-            let giaInserito = carrello.find(i => i.codice === v.codice);
-            if (giaInserito) {
-                mostraAvvisoModale("Questo voucher è già presente nello scontrino attuale.");
+    if (codice.startsWith('GC')) {
+        // --- LOGICA GIFT CARD (Pagamento a scalare) ---
+        let gc = await getRecordById('giftcards', codice);
+        if (gc) {
+            if (gc.stato !== 'ATTIVA') {
+                mostraAvvisoModale(`Operazione negata: Questa Gift Card risulta <b>${gc.stato}</b>.`);
+                inputCampo.value = ''; return;
+            }
+            if (gc.saldo <= 0) {
+                mostraAvvisoModale("Il credito di questa Gift Card è esaurito.");
+                inputCampo.value = ''; return;
+            }
+            if (totaleNettoAttuale <= 0) {
+                mostraAvvisoModale("Il totale dello scontrino è già a zero. Non puoi scalare altro credito.");
                 return;
             }
 
-            let prodVoucher = {
-                codice: v.codice,
-                descrizione: "🎟️ BUONO RESO SCALATO",
+            // Calcola quanto prelevare: il minimo tra il totale da pagare e il saldo della carta
+            let importoDaScalare = Math.min(totaleNettoAttuale, gc.saldo);
+
+            let prodGC = {
+                codice: gc.codice,
+                descrizione: "💳 PAGAMENTO CON GIFT CARD",
                 giacenza: "-",
-                prezzo: -Math.abs(v.importo),
-                categoria: "VOUCHER",
-                tipo: "VOUCHER"
+                prezzo: -importoDaScalare, // Prezzo negativo perché abbatte il totale scontrino
+                categoria: "GIFT_CARD_USO",
+                is_giftcard_uso: true,
+                tipo: "GC"
             };
-            aggiungiProdotto(prodVoucher);
+            aggiungiProdotto(prodGC);
             inputCampo.value = '';
         } else {
-            mostraAvvisoModale("⚠️ VOUCHER NON VALIDO<br>Il codice inserito non esiste, è scaduto oppure è già stato utilizzato in precedenza.");
+            mostraAvvisoModale("Gift Card non trovata nel database.");
             inputCampo.value = '';
         }
-    };
+
+    } else {
+        // --- LOGICA CLASSICA VOUCHER / BUONO RESO ---
+        let tx = db.transaction('vouchers', 'readonly');
+        let store = tx.objectStore('vouchers');
+        let req = store.get(codice);
+
+        req.onsuccess = function () {
+            if (req.result) {
+                let v = req.result;
+                let prodVoucher = {
+                    codice: v.codice,
+                    descrizione: "🎟️ BUONO RESO SCALATO",
+                    giacenza: "-",
+                    prezzo: -Math.abs(v.importo),
+                    categoria: "VOUCHER",
+                    tipo: "VOUCHER"
+                };
+                aggiungiProdotto(prodVoucher);
+                inputCampo.value = '';
+            } else {
+                mostraAvvisoModale("⚠️ VOUCHER NON VALIDO<br>Il codice inserito non esiste, è scaduto oppure è già stato utilizzato.");
+                inputCampo.value = '';
+            }
+        };
+    }
 };
 
 // Permette di sparare il voucher col lettore senza dover premere il tasto "APPLICA"
@@ -5173,6 +5254,118 @@ window.eliminaCategoria = function (cat) {
     popolaSelectCategorie();
 };
 
+// ==========================================
+// 🎁 MODULO GIFT CARD (EMISSIONE E STAMPA)
+// ==========================================
+window.apriModaleEmissioneGiftCard = function () {
+    document.getElementById('input-importo-giftcard').value = '';
+    apriModale('modal-emissione-giftcard');
+    setTimeout(() => document.getElementById('input-importo-giftcard').focus(), 100);
+};
+
+window.aggiungiGiftCardAlCarrello = function () {
+    let inputVal = document.getElementById('input-importo-giftcard').value.replace(',', '.');
+    let importo = parseFloat(inputVal);
+
+    if (isNaN(importo) || importo <= 0) {
+        mostraAvvisoModale("Inserisci un importo valido.");
+        return;
+    }
+
+    let codiceGC = "GC" + Math.floor(10000000 + Math.random() * 90000000); // Es. GC12345678
+
+    // Utilizziamo la funzione nativa del tuo gestionale per aggiungere e disegnare la riga!
+    aggiungiProdotto({
+        codice: codiceGC,
+        descrizione: "GIFT CARD PREPAGATA",
+        giacenza: "-",
+        prezzo: importo,
+        categoria: "GIFT_CARD",
+        is_giftcard: true,
+        iva: 0,
+        tipo: "PZ"
+    });
+
+    chiudiModale('modal-emissione-giftcard');
+};
+
+function getScadenzaGiftCard() {
+    let d = new Date();
+    d.setFullYear(d.getFullYear() + 1); // Validità 12 mesi
+    return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+}
+
+window.stampaTicketGiftCard = function (gc) {
+    let printArea = document.getElementById('print-area');
+
+    printArea.innerHTML = `
+        <div class="print-ticket" style="color: black; font-family: monospace; background: white; text-align: center; padding: 10px 0;">
+            <div style="font-size: 18pt; font-weight: bold; margin-bottom: 2mm;">🎁 GIFT CARD</div>
+            <div style="font-size: 10pt; margin-bottom: 5mm;">BUONO REGALO PREPAGATO</div>
+            
+            <svg id="barcode-gc"></svg>
+            
+            <div style="font-size: 14pt; font-weight: bold; margin-top: 5mm; margin-bottom: 2mm;">VALORE: € ${gc.importoIniziale.toLocaleString('it-IT', { minimumFractionDigits: 2 })}</div>
+            
+            <div style="border-bottom: 1px dashed black; margin: 3mm 0;"></div>
+            
+            <div style="font-size: 9pt; text-align: left; padding: 0 5mm;">
+                <div><b>Emissione:</b> ${gc.dataEmissione}</div>
+                <div><b>Scadenza:</b> ${gc.scadenza}</div>
+                <div style="margin-top: 3mm;">Da conservare con cura. Utilizzabile per acquisti parziali o totali fino ad esaurimento del credito. Non rimborsabile in contanti.</div>
+            </div>
+            
+            <div style="border-bottom: 1px dashed black; margin: 3mm 0;"></div>
+            <div style="font-size: 8pt; margin-top: 2mm;">Grazie e a presto!</div>
+        </div>
+    `;
+
+    JsBarcode("#barcode-gc", gc.codice, {
+        format: "CODE128", width: 2, height: 60, displayValue: true, fontSize: 16, margin: 10
+    });
+
+    setTimeout(() => window.print(), 500);
+};
+
+// ==========================================
+// 💳 REPORT FINANZIARIO DEBITI GIFT CARD
+// ==========================================
+window.apriReportGiftCard = async function () {
+    let giftcards = await getAll('giftcards');
+    let tbody = document.getElementById('body-report-giftcard');
+    tbody.innerHTML = '';
+
+    let numAttive = 0;
+    let totDebito = 0;
+
+    // Ordina dalla più recente alla più vecchia
+    giftcards.sort((a, b) => new Date(b.dataEmissione.split('/').reverse().join('-')) - new Date(a.dataEmissione.split('/').reverse().join('-')));
+
+    giftcards.forEach(gc => {
+        if (gc.stato === 'ATTIVA' && gc.saldo > 0) {
+            numAttive++;
+            totDebito += gc.saldo;
+        }
+
+        let coloreStato = gc.stato === 'ATTIVA' ? '#00cc66' : '#ff4d4d';
+        let tr = document.createElement('tr');
+        tr.style.borderBottom = "1px solid rgba(255,255,255,0.05)";
+        tr.innerHTML = `
+            <td style="padding: 10px; font-weight: bold;">${gc.codice}</td>
+            <td style="padding: 10px;">${gc.dataEmissione}</td>
+            <td style="padding: 10px; text-align: right;">€ ${gc.importoIniziale.toLocaleString('it-IT', { minimumFractionDigits: 2 })}</td>
+            <td style="padding: 10px; text-align: right; color: #ffcc00; font-weight: bold;">€ ${gc.saldo.toLocaleString('it-IT', { minimumFractionDigits: 2 })}</td>
+            <td style="padding: 10px; text-align: center; color: ${coloreStato};">${gc.stato}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    document.getElementById('report-gc-attive').textContent = numAttive;
+    document.getElementById('report-gc-debito').textContent = '€ ' + totDebito.toLocaleString('it-IT', { minimumFractionDigits: 2 });
+
+    apriModale('modal-report-giftcard');
+};
+
 // Esegui la funzione all'avvio dell'app per popolare i menu
 window.addEventListener('load', popolaSelectCategorie);
 
@@ -5212,8 +5405,32 @@ setInterval(() => {
         if (typeof scaricaVouchersDalCloud === "function") scaricaVouchersDalCloud();
         if (typeof scaricaOrdiniDalCloud === "function") scaricaOrdiniDalCloud();
         if (typeof scaricaChiusureDalCloud === "function") scaricaChiusureDalCloud();
+        // --- GIFTCARD DOWNLOAD CLOUD ---
+        if (typeof scaricaGiftCardsDalCloud === "function") scaricaGiftCardsDalCloud();
     }
 }, 60000);
+
+// ==========================================
+// ☁️ CLOUD-SYNC: GIFT CARDS
+// ==========================================
+window.salvaGiftCardCloud = async function (gc) {
+    if (!FIREBASE_URL || !navigator.onLine) return;
+    try { await fetch(`${FIREBASE_URL}/giftcards/${gc.codice}.json`, { method: 'PUT', body: JSON.stringify(gc) }); } catch (e) { }
+};
+
+window.scaricaGiftCardsDalCloud = async function () {
+    if (!FIREBASE_URL) return;
+    try {
+        let res = await fetch(`${FIREBASE_URL}/giftcards.json`);
+        if (!res.ok) return;
+        let data = await res.json();
+        if (data && !data.error) {
+            let tx = db.transaction('giftcards', 'readwrite');
+            let store = tx.objectStore('giftcards');
+            for (let key in data) { store.put(data[key]); }
+        }
+    } catch (e) { }
+};
 
 // ==========================================
 // 🛡️ FILTRO GLOBALE CAMPI NUMERICI E IMPORTI
