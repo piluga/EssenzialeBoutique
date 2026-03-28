@@ -282,10 +282,43 @@ window.confermaNumpad = function () {
 
 // AGGIUNGI PRODOTTO A CARRELLO E SCHERMO
 function aggiungiProdotto(prodotto) {
-    // --- NOVITÀ: BLOCCO TESTER ---
+    // --- BLOCCO TESTER (Esistente) ---
     if (prodotto.is_tester) {
         mostraAvvisoModale("<b>ARTICOLO TESTER</b><br><br>Questo articolo è contrassegnato come Tester/Campione e non può essere inserito nello scontrino di vendita.");
         return;
+    }
+
+    // --- LOGICA SCOMPOSIZIONE AUTOMATICA STECCHE ---
+    if (prodotto.giacenza <= 0 && prodotto.giacenza_stecche > 0 && prodotto.uom_secondaria > 1) {
+        prodotto.giacenza_stecche -= 1;
+        prodotto.giacenza += prodotto.uom_secondaria;
+
+        // Salva istantaneamente la nuova giacenza nel database locale
+        let txMag = db.transaction('magazzino', 'readwrite');
+        txMag.objectStore('magazzino').put(prodotto);
+
+        // Registra il movimento di cassa (invisibile al cliente, utile per i controlli)
+        salvaMovimentoCassaDB({
+            data: getOggiString(),
+            ora: new Date().toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' }),
+            tipo: "USCITA", // Uscita virtuale
+            importo: 0, // Nessun impatto monetario
+            descrizione: `Scomposizione Auto: Aperta 1 stecca di ${prodotto.descrizione} (+${prodotto.uom_secondaria} pz)`
+        });
+
+        // Avvisiamo l'operatore con la nostra modale di sistema
+        mostraAvvisoModale(`📦 <b>SCOMPOSIZIONE AUTOMATICA</b><br><br>Giacenza pacchetti esaurita.<br>È stata aperta automaticamente 1 stecca di <b>${prodotto.descrizione}</b>.<br>Nuova giacenza pacchetti: ${prodotto.giacenza}`);
+    }
+
+    // --- BLOCCO PREZZO FISSO IN CASSA ---
+    if (prodotto.prezzo_fisso) {
+        // Logica futura: se hai un tasto "Modifica Prezzo" in cassa, 
+        // leggerà questa variabile per disabilitare l'input.
+    }
+
+    // --- NUOVO: AVVISO GIACENZA GRATTA E VINCI ---
+    if (prodotto.is_grattaevinci && prodotto.giacenza <= 0) {
+        mostraAvvisoModale("⚠️ <b>GIACENZA LOTTERIA ZERO</b><br><br>Stai vendendo un biglietto, ma a sistema il pacco risulta terminato.<br>Ricordati di registrare il CARICO del nuovo pacco.");
     }
     let itemInCart = carrello.find(i => i.codice === prodotto.codice);
     if (itemInCart) {
@@ -589,7 +622,11 @@ window.confermaVendita = async function (riscattaBonus) {
         IMPORTO: item.prezzo * item.qta,
         QUANTITA: item.qta,
         CATEGORIA: item.categoria,
-        IVA: item.iva || 22
+        IVA: item.iva || 22,
+        // --- NUOVI CAMPI MONOPOLIO ---
+        is_monopolio: item.is_monopolio || false,
+        is_grattaevinci: item.is_grattaevinci || false,
+        aggio_calcolato: item.aggio ? ((item.prezzo * item.qta) * (item.aggio / 100)) : 0
         }))
     };
 
@@ -814,7 +851,8 @@ window.applicaPuntiManuali = async function (azione) {
     let catSelezionata = document.getElementById('man-punti-categoria') ? document.getElementById('man-punti-categoria').value : "DIRETTO";
     let moltiplicatore = 1; // Default per assegnazione esatta
 
-    if (catSelezionata !== "DIRETTO") {
+    // 🔥 FIX: Il moltiplicatore si applica SOLO in fase di CARICO. Lo scarico è sempre 1 a 1.
+    if (azione === 'CARICA' && catSelezionata !== "DIRETTO") {
         let regoleSalvate = localStorage.getItem('crm_soglie_punti');
         let regole = regoleSalvate ? JSON.parse(regoleSalvate) : { "CBD": 1, "PM": 1, "HHC": 0.5, "DEFAULT": 0.25 };
         if (regole[catSelezionata] !== undefined) {
@@ -836,7 +874,7 @@ window.applicaPuntiManuali = async function (azione) {
     clienteManualeScelto.dataUltimaOperazione = inPuntiData.value;
     await updateCliente(clienteManualeScelto);
 
-    // 🔥 SINCRONIZZAZIONE FIREBASE (Punti Manuali)
+    // 🔥 SINCRONIZZAZIONE FIREBASE E SALVATAGGIO MOVIMENTO
     let puntiCaric = azione === 'CARICA' ? puntiDaverificare : 0;
     let puntiScaric = azione === 'SOTTRAI' ? puntiDaverificare : 0;
 
@@ -2253,15 +2291,32 @@ let kitComponentiAttuali = [];
 window.calcolaMargine = function () {
     let acq = parseFloat(document.getElementById('mag-prezzo-acq').value.replace(',', '.')) || 0;
     let ven = parseFloat(document.getElementById('mag-prezzo-ven').value.replace(',', '.')) || 0;
+    let tipo = document.getElementById('mag-tipo-prodotto').value;
+    let aggioPercentuale = parseFloat(document.getElementById('mag-aggio').value.replace(',', '.')) || 0;
+
     let margineDisplay = document.getElementById('mag-margine-calc');
 
-    if (ven > 0) {
-        let margine = ((ven - acq) / ven) * 100;
-        margineDisplay.textContent = margine.toFixed(2) + '%';
-        margineDisplay.style.color = margine < 30 ? '#ff6666' : '#00ffcc';
+    if (tipo === 'TABACCO' || tipo === 'GRATTA_E_VINCI' || tipo === 'VALORE_BOLLATO') {
+        // Calcolo basato sull'AGGIO (Prezzo Vendita * Percentuale Aggio)
+        if (ven > 0 && aggioPercentuale > 0) {
+            let utileAggio = ven * (aggioPercentuale / 100);
+            margineDisplay.innerHTML = `Utile Aggio: <br><b>€ ${utileAggio.toFixed(2)}</b>`;
+            margineDisplay.style.color = '#ffcc00';
+        } else {
+            margineDisplay.textContent = 'Aggio non impostato';
+            margineDisplay.style.color = '#ff4d4d';
+        }
     } else {
-        margineDisplay.textContent = '0.00%';
-        margineDisplay.style.color = '#b3d9ff';
+        // Calcolo Ricarico Standard Commerciale
+        if (ven > 0) {
+            let margine = ((ven - acq) / ven) * 100;
+            let utileLordo = ven - acq;
+            margineDisplay.innerHTML = `${margine.toFixed(2)}%<br>(€ ${utileLordo.toFixed(2)})`;
+            margineDisplay.style.color = margine < 30 ? '#ff6666' : '#00ffcc';
+        } else {
+            margineDisplay.textContent = '0.00%';
+            margineDisplay.style.color = '#b3d9ff';
+        }
     }
 };
 
@@ -2366,6 +2421,11 @@ function magCaricaScheda(p) {
     document.getElementById('mag-tipo-kit').value = p.tipo_kit || "DINAMICO";
     document.getElementById('btn-converti-tester').style.display = 'block';
     document.getElementById('mag-fornitore').value = p.fornitore || "";
+
+    document.getElementById('mag-is-monopolio').checked = !!p.is_monopolio;
+    document.getElementById('mag-is-grattaevinci').checked = !!p.is_grattaevinci;
+    document.getElementById('mag-codice-logista').value = p.codice_logista || "";
+    document.getElementById('mag-aggio').value = p.aggio ? p.aggio.toLocaleString('it-IT', { minimumFractionDigits: 2 }) : "";
     kitComponentiAttuali = p.componenti_kit ? JSON.parse(JSON.stringify(p.componenti_kit)) : [];
 
     toggleSezioneKit();
@@ -2403,6 +2463,12 @@ window.magNuovoProdotto = function () {
     document.getElementById('mag-tipo-kit').value = "DINAMICO";
     document.getElementById('btn-converti-tester').style.display = 'none';
     document.getElementById('mag-fornitore').value = '';
+
+    document.getElementById('mag-is-monopolio').checked = false;
+    document.getElementById('mag-is-grattaevinci').checked = false;
+    document.getElementById('mag-codice-logista').value = '';
+    document.getElementById('mag-aggio').value = '';
+
     kitComponentiAttuali = [];
 
     toggleSezioneKit();
@@ -2429,13 +2495,21 @@ window.magSalvaProdotto = async function () {
         return;
     }
 
+    let isMonopolio = document.getElementById('mag-is-monopolio').checked;
+    let isGrattaEVinci = document.getElementById('mag-is-grattaevinci').checked;
+    let codiceLogista = document.getElementById('mag-codice-logista').value.trim();
+    let aggioVal = parseFloat(document.getElementById('mag-aggio').value.replace(',', '.')) || 0;
+
+    // Validazione speciale per Monopoli
+    if ((isMonopolio || isGrattaEVinci) && aggioVal <= 0) {
+        mostraAvvisoModale("Gli articoli di Monopolio o Lotteria devono avere una percentuale di Aggio maggiore di zero per il calcolo dei margini.");
+        return;
+    }
+
     let nuovoProdotto = {
         codice: codice,
         categoria: document.getElementById('mag-categoria').value,
-        fornitore: document.getElementById('mag-fornitore').value.trim().toUpperCase(), // <--- AGGIUNGI QUESTO
-        descrizione: descrizione,
-        codice: codice,
-        categoria: document.getElementById('mag-categoria').value,
+        fornitore: document.getElementById('mag-fornitore').value.trim().toUpperCase(),
         descrizione: descrizione,
         brand: document.getElementById('mag-brand').value.trim(),
         linea: document.getElementById('mag-linea').value.trim(),
@@ -2454,7 +2528,19 @@ window.magSalvaProdotto = async function () {
         is_kit: isKit,
         tipo_kit: isKit ? document.getElementById('mag-tipo-kit').value : null,
         componenti_kit: isKit ? JSON.parse(JSON.stringify(kitComponentiAttuali)) : null,
-        tipo: "PZ"
+        tis_monopolio: isMonopolio,
+        is_grattaevinci: isGrattaEVinci,
+        codice_logista: codiceLogista,
+        aggio: aggioVal,
+        tipo: "PZ",
+        tipo_prodotto: document.getElementById('mag-tipo-prodotto').value,
+        prezzo_fisso: document.getElementById('mag-prezzo-fisso').checked,
+        aggio: parseFloat(document.getElementById('mag-aggio').value.replace(',', '.')) || 0,
+        codice_logista: document.getElementById('mag-codice-logista').value.trim(),
+        ean_stecca: document.getElementById('mag-ean-stecca').value.trim(),
+        giacenza_stecche: parseInt(document.getElementById('mag-giacenza-stecche').value) || 0,
+        uom_secondaria: parseInt(document.getElementById('mag-uom-secondaria').value) || 1,
+        peso_unitario: parseFloat(document.getElementById('mag-peso-unitario').value.replace(',', '.')) || 0,
     };
 
     let tx = db.transaction('magazzino', 'readwrite');
@@ -4348,6 +4434,67 @@ window.generaOrdineDaSottoscorta = function () {
     };
 };
 
+// ==========================================
+// 🚬 MOTORE ESPORTAZIONE LOGISTA (MODELLO U88)
+// ==========================================
+window.generaOrdineLogistaU88 = function () {
+    let tx = db.transaction('magazzino', 'readonly');
+    let store = tx.objectStore('magazzino');
+    let req = store.getAll();
+
+    req.onsuccess = function () {
+        let magazzino = req.result || [];
+
+        // Filtra SOLO i prodotti contrassegnati come Monopolio che sono sotto la scorta minima
+        let daOrdinare = magazzino.filter(p => p.is_monopolio && p.scorta_minima > 0 && p.giacenza < p.scorta_minima);
+
+        if (daOrdinare.length === 0) {
+            mostraAvvisoModale("Ottimo!<br>Nessun prodotto di Monopolio è attualmente sotto la soglia di scorta minima.");
+            return;
+        }
+
+        let contenutoFile = "";
+        let righeOrdine = 0;
+
+        daOrdinare.forEach(p => {
+            let giacenzaReale = p.giacenza > 0 ? p.giacenza : 0;
+            // Calcola i pezzi mancanti per arrivare alla scorta minima
+            let qtaDaComprare = p.scorta_minima - giacenzaReale;
+
+            // Usa il codice specifico di Logista, se assente usa il codice a barre
+            let codiceLogista = p.codice_logista || p.codice;
+
+            // ATTENZIONE: Logista di solito accetta tracciati CSV semplici: Codice;Quantità
+            // Se vendi a pacchetti ma ordini a stecche (10pz), qui potresti dividere qtaDaComprare / 10
+            let qtaStecche = Math.ceil(qtaDaComprare / 10); // Arrotonda sempre per eccesso alla stecca intera
+
+            if (qtaStecche > 0) {
+                contenutoFile += `${codiceLogista};${qtaStecche}\r\n`;
+                righeOrdine++;
+            }
+        });
+
+        if (righeOrdine === 0) {
+            mostraAvvisoModale("Fabbisogno troppo basso per generare stecche intere.");
+            return;
+        }
+
+        // Creazione fisica del file e avvio del download
+        let blob = new Blob([contenutoFile], { type: 'text/csv;charset=utf-8;' });
+        let url = URL.createObjectURL(blob);
+        let link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", `Ordine_Logista_U88_${getOggiString()}.txt`); // Formato testo leggibile da Logista
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        // Notifica finale senza bloccare il sistema
+        mostraAvvisoModale(`✅ <b>ORDINE LOGISTA GENERATO</b><br><br>Il file U88 contenente <b>${righeOrdine}</b> referenze in stecche è stato scaricato sul tuo computer.<br><br>Puoi importarlo direttamente sul portale Logista senza dover inserire i codici a mano.`);
+    };
+};
+
 window.apriDettaglioOrdine = function (id) {
     let tx = db.transaction('ordini', 'readonly');
     let req = tx.objectStore('ordini').get(id);
@@ -4791,34 +4938,45 @@ window.apriModaleChiusuraCassa = async function () {
         let lordo = 0; let sconti = 0; let resi = 0; let contanti = 0; let pos = 0; let voucher = 0;
         let entrate = 0; let uscite = 0; let ivaBreakdown = {};
 
+        // --- NUOVI CONTATORI TABACCHERIA ---
+        let totaleMonopoli = 0; let totaleLotterie = 0; let totaleAggi = 0;
+
         venditeOggi.forEach(v => {
             sconti += (v.BONUS || 0);
 
             v.ARTICOLI.forEach(art => {
-                if (art.CODICE === "PUNTI" || art.DESCRIZIONE.includes("MOVIMENTO MANUALE")) return; // Ignora i movimenti di soli punti
+                if (art.CODICE === "PUNTI" || art.DESCRIZIONE.includes("MOVIMENTO MANUALE")) return;
 
                 let importoRiga = art.IMPORTO;
 
-                // Tracciamento Resi (Negativi)
                 if (importoRiga < 0 && art.CODICE.startsWith("RES-")) {
                     resi += Math.abs(importoRiga);
-                }
-                // Tracciamento Voucher Riscattati
-                else if (importoRiga < 0 && art.CATEGORIA === "VOUCHER") {
+                } else if (importoRiga < 0 && art.CATEGORIA === "VOUCHER") {
                     voucher += Math.abs(importoRiga);
-                }
-                // Merce venduta normale
-                else {
+                } else {
                     lordo += importoRiga;
 
-                    // Calcolo IVA (scorporo)
-                    let aliquota = art.IVA || 22; // Se manca, assume 22%
-                    if (!ivaBreakdown[aliquota]) ivaBreakdown[aliquota] = { imponibile: 0, imposta: 0, lordo: 0 };
+                    // --- NUOVA LOGICA SCORPORO MONOPOLI ---
+                    if (art.is_monopolio || art.is_grattaevinci) {
+                        if (art.is_monopolio) totaleMonopoli += importoRiga;
+                        if (art.is_grattaevinci) totaleLotterie += importoRiga;
+                        totaleAggi += (art.aggio_calcolato || 0);
 
-                    ivaBreakdown[aliquota].lordo += importoRiga;
-                    let imponibile = importoRiga / (1 + (aliquota / 100));
-                    ivaBreakdown[aliquota].imponibile += imponibile;
-                    ivaBreakdown[aliquota].imposta += (importoRiga - imponibile);
+                        // Assegnazione al reparto Esente/Art. 74
+                        let aliquota = "Esente/Art.74";
+                        if (!ivaBreakdown[aliquota]) ivaBreakdown[aliquota] = { imponibile: 0, imposta: 0, lordo: 0 };
+                        ivaBreakdown[aliquota].lordo += importoRiga;
+                        ivaBreakdown[aliquota].imponibile += importoRiga;
+                        ivaBreakdown[aliquota].imposta += 0;
+                    } else {
+                        // Calcolo IVA standard per articoli normali
+                        let aliquota = art.IVA || 22;
+                        if (!ivaBreakdown[aliquota]) ivaBreakdown[aliquota] = { imponibile: 0, imposta: 0, lordo: 0 };
+                        ivaBreakdown[aliquota].lordo += importoRiga;
+                        let imponibile = importoRiga / (1 + (aliquota / 100));
+                        ivaBreakdown[aliquota].imponibile += imponibile;
+                        ivaBreakdown[aliquota].imposta += (importoRiga - imponibile);
+                    }
                 }
             });
 
@@ -4826,25 +4984,17 @@ window.apriModaleChiusuraCassa = async function () {
             pos += v.POS;
         });
 
-        movimentiOggi.forEach(m => {
-            if (m.tipo === 'ENTRATA') entrate += m.importo;
-            if (m.tipo === 'USCITA') uscite += m.importo;
-        });
-
         let cassettoTeorico = contanti + entrate - uscite;
 
-        // Salviamo in memoria per la stampa e per il Database
         datiChiusuraAttuale = {
-            data_chiusura: dataOggi,
-            data: dataOggi,
-            operatore: operatoreAttivo,
+            data_chiusura: dataOggi, data: dataOggi, operatore: operatoreAttivo,
             lordo: lordo, sconti: sconti, resi: resi,
             contanti: contanti, pos: pos, voucher: voucher,
             entrate: entrate, uscite: uscite,
-            cassettoTeorico: cassettoTeorico,
-            iva: ivaBreakdown,
-            differenza: 0,
-            fondoCassa: 0
+            cassettoTeorico: cassettoTeorico, iva: ivaBreakdown,
+            differenza: 0, fondoCassa: 0,
+            // Passiamo i nuovi dati al PDF/Stampa
+            totaleMonopoli: totaleMonopoli, totaleLotterie: totaleLotterie, totaleAggi: totaleAggi
         };
 
         // Aggiorna UI
@@ -5013,8 +5163,7 @@ window.stampaChiusuraZ = function (dati) {
                 <span>DIFFERENZA:</span> <span>${dati.differenza >= 0 ? '+' : '-'} € ${Math.abs(dati.differenza).toFixed(2).replace('.', ',')}</span>
             </div>
 
-            <div style="border-bottom: 1px dashed black; margin-bottom: 2mm;"></div>
-            
+            <div style="border-bottom: 1px dashed black; margin-bottom: 2mm;"></div>     
             <div style="display: flex; justify-content: space-between; font-size: 9pt; margin-bottom: 1mm;">
                 <span>Fondo Cassa Domani:</span> <span>€ ${dati.fondoCassa.toFixed(2).replace('.', ',')}</span>
             </div>
@@ -5022,6 +5171,19 @@ window.stampaChiusuraZ = function (dati) {
                 <span>DA VERSARE IN BANCA:</span> <span>€ ${dati.contantiDaVersare.toFixed(2).replace('.', ',')}</span>
             </div>
             
+            <div style="border-bottom: 1px dashed black; margin-bottom: 2mm; margin-top: 2mm;"></div>
+            <div style="font-weight: bold; font-size: 10pt; margin-bottom: 2mm; text-align: center;">REPARTI MONOPOLIO E AGGI</div>
+
+            <div style="display: flex; justify-content: space-between; font-size: 9pt; margin-bottom: 1mm;">
+                <span>Tabacchi e Valori:</span> <span>€ ${dati.totaleMonopoli.toFixed(2).replace('.', ',')}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 9pt; margin-bottom: 1mm;">
+                <span>Lotterie (Gratta e Vinci):</span> <span>€ ${dati.totaleLotterie.toFixed(2).replace('.', ',')}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; font-size: 10pt; font-weight: bold; margin-top: 2mm; color: #000;">
+                <span>AGGIO MATURATO (Utile):</span> <span>€ ${dati.totaleAggi.toFixed(2).replace('.', ',')}</span>
+            </div>
+
             <div style="border-bottom: 1px dashed black; margin-bottom: 2mm; margin-top: 2mm;"></div>
             <div style="font-weight: bold; font-size: 10pt; margin-bottom: 2mm; text-align: center;">RIEPILOGO IVA</div>
             ${ivaHtml}
@@ -5355,6 +5517,62 @@ window.stampaTicketGiftCard = function (gc) {
     });
 
     setTimeout(() => window.print(), 500);
+};
+
+window.importaListinoLogista = function (event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = async function (e) {
+        const text = e.target.result;
+        const righe = text.split('\n').filter(riga => riga.trim() !== '');
+
+        if (righe.length <= 1) {
+            mostraAvvisoModale("Il file CSV Logista sembra vuoto o non valido.");
+            event.target.value = '';
+            return;
+        }
+
+        const separatore = righe[0].includes(';') ? ';' : ',';
+
+        let tx = db.transaction('magazzino', 'readwrite');
+        let store = tx.objectStore('magazzino');
+        let magazzinoAttuale = await getAll('magazzino');
+        let contatoreAggiornati = 0;
+
+        // Partiamo da i=1 per saltare l'intestazione
+        for (let i = 1; i < righe.length; i++) {
+            const valori = righe[i].split(separatore).map(v => v.trim().replace(/"/g, ''));
+
+            // Assumiamo tracciato standard Logista: Colonna 0 (Codice), Colonna 2 (Nuovo Prezzo)
+            let codLogista = valori[0];
+            let nuovoPrezzo = parseFloat(valori[2].replace(',', '.')) || 0;
+
+            if (codLogista && nuovoPrezzo > 0) {
+                // Cerca se abbiamo questo codice Logista in anagrafica
+                let prodottoEsistente = magazzinoAttuale.find(p => p.codice_logista === codLogista);
+
+                if (prodottoEsistente && prodottoEsistente.prezzo !== nuovoPrezzo) {
+                    prodottoEsistente.prezzo = nuovoPrezzo;
+                    store.put(prodottoEsistente);
+                    contatoreAggiornati++;
+
+                    // Sincronizza sul Cloud
+                    if (typeof salvaProdottoCloud === "function") {
+                        salvaProdottoCloud(prodottoEsistente);
+                    }
+                }
+            }
+        }
+
+        tx.oncomplete = function () {
+            mostraAvvisoModale(`✅ <b>LISTINO LOGISTA AGGIORNATO</b><br><br>Sono stati aggiornati con successo i prezzi di <b>${contatoreAggiornati}</b> referenze di tabacco in base al nuovo file ministeriale.`);
+            event.target.value = '';
+        };
+    };
+
+    reader.readAsText(file, 'UTF-8');
 };
 
 // ==========================================
