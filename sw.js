@@ -1,5 +1,4 @@
-﻿// 1. AUMENTA IL NUMERO DI VERSIONE per forzare l'aggiornamento
-const CACHE_NAME = 'cassa-pwa-v116';
+const CACHE_NAME = 'cassa-pwa-v117';
 
 const ASSETS_TO_CACHE = [
     './',
