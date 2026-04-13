@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manuale Operativo - Gestionale Cassa</title>
+    <style>
+        /* Stili Generali e per lo Schermo */
+        html { scroll-behavior: smooth; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            color: #333; 
+            line-height: 1.6; 
+            max-width: 900px; 
+            margin: 0 auto; 
+            padding: 40px; 
+            background-color: #f9f9f9;
+        }
+        .container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+        h1 { color: #002b5e; border-bottom: 3px solid #002b5e; padding-bottom: 10px; font-size: 32px; text-align: center; }
+        h2 { color: #0055cc; margin-top: 40px; border-bottom: 2px solid #e0e0e0; padding-bottom: 5px; font-size: 24px; padding-top: 20px; }
+        h3 { color: #333; margin-top: 25px; font-size: 18px; }
+        ul, ol { margin-bottom: 20px; padding-left: 20px; }
+        li { margin-bottom: 8px; }
+        strong { color: #000; }
+        .nota { background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 10px 15px; margin: 15px 0; font-size: 14px; border-radius: 0 4px 4px 0;}
+        .nota-rossa { background-color: #ffe6e6; border-left: 4px solid #ff4d4d; padding: 10px 15px; margin: 15px 0; font-size: 14px; border-radius: 0 4px 4px 0;}
+        
+        /* Box Indice / Menu Rapido */
+        .toc {
+            background: #f1f8ff;
+            border: 1px solid #cce5ff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 40px;
+        }
+        .toc h3 { margin-top: 0; color: #004085; font-size: 20px; margin-bottom: 15px; }
+        .toc a {
+            display: block;
+            color: #0056b3;
+            text-decoration: none;
+            padding: 5px 0;
+            font-weight: bold;
+            transition: color 0.2s;
+        }
+        .toc a:hover { color: #002b5e; text-decoration: underline; }
+
+        /* Stile per le immagini del manuale */
+        .img-manuale {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            margin: 20px auto;
+            border: 1px solid #ccc;
+            display: block;
+        }
+
+        .footer { margin-top: 50px; text-align: center; font-size: 12px; color: #888; border-top: 1px solid #ccc; padding-top: 20px; }
+        
+        /* Ottimizzazione per la Stampa (PDF/Carta) */
+        @media print {
+            body { background-color: white; padding: 0; }
+            .container { box-shadow: none; padding: 0; }
+            .toc { display: none; } /* Nasconde il menu rapido in stampa */
+            h2 { page-break-after: avoid; }
+            ul, ol, p, .nota, .nota-rossa, img { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>📘 MANUALE OPERATIVO DI CASSA</h1>
+        <p style="text-align: center; font-size: 16px; color: #666; margin-bottom: 30px;">
+            Guida rapida per l'uso quotidiano del gestionale PWA: dalla vendita, alla sicurezza, alla chiusura serale.
+        </p>
+
+        <div class="toc">
+            <h3>📑 Menu Rapido</h3>
+            <a href="#capitolo-1">1. Accesso, PIN e Fast-Switch</a>
+            <a href="#capitolo-2">2. La Vendita al Bancone (Cassa)</a>
+            <a href="#capitolo-3">3. Sconti, Voucher e Gift Card</a>
+            <a href="#capitolo-4">4. Gestione Resi (Cambio Merce)</a>
+            <a href="#capitolo-5">5. Magazzino ed Etichette</a>
+            <a href="#capitolo-6">6. Inventario e Riconciliazione</a>
+            <a href="#capitolo-7">7. Spese Extra e Incassi</a>
+            <a href="#capitolo-8">8. Chiusura Serale (Z-Report)</a>
+            <a href="#capitolo-9">9. Business Intelligence</a>
+            <a href="#capitolo-10">10. Sicurezza dei Dati e Backup</a>
+            <a href="#capitolo-11">11. Gestione Operatori e Ruoli (Admin)</a>
+            <a href="#capitolo-12">12. Gestione Profumi alla Spina e Distinta Base (BOM)</a>
+            <a href="#capitolo-13">13. Tracciabilità Lotti e Scadenze (PAO)</a>
+            <a href="#capitolo-14">14. Approfondimento: Il Costo Acquisto al Millilitro</a>
+        </div>
+
+        <h2 id="capitolo-1">🟢 1. ACCESSO, PIN E FAST-SWITCH</h2>
+        <p>Il gestionale è protetto da un sistema di sicurezza a ruoli per tracciare chi esegue le operazioni.</p>
+
+        <h3>Avvio e Sblocco</h3>
+        <ol>
+            <li>All'apertura, il sistema mostrerà la schermata blu di blocco.</li>
+            <li>Digita il tuo <strong>PIN a 4 cifre</strong> sul tastierino a schermo (o con la tastiera fisica).</li>
+            <li>Il sistema riconoscerà automaticamente il tuo profilo (Sales, Manager o Admin) e sbloccherà le funzioni a te consentite.</li>
+        </ol>
+
+        <h3>Cambio Operatore Rapido (Fast-Switch)</h3>
+        <p>Se due dipendenti si alternano in cassa, non serve chiudere l'applicazione:</p>
+        <ul>
+            <li>Clicca sul <strong>nome dell'operatore attuale</strong> visibile in alto nella barra di stato.</li>
+            <li>La cassa si bloccherà all'istante, nascondendo i dati.</li>
+            <li>Il subentrante potrà inserire il proprio PIN e continuare il lavoro.</li>
+        </ul>
+        <div class="nota">⚠️ <strong>Nota:</strong> Se la cassa viene lasciata incustodita, si bloccherà automaticamente dopo 5 minuti di inattività.</div>
+
+        <h2 id="capitolo-2">🛒 2. LA VENDITA AL BANCONE (Cassa)</h2>
+        <p>La schermata <strong>Cassa</strong> è dove passerai la maggior parte del tempo.</p>
+
+        <h3>Inserire i Prodotti nello Scontrino</h3>
+        <ul>
+            <li><strong>Con il Lettore (Consigliato):</strong> Spara semplicemente il codice a barre. Il prodotto si aggiungerà da solo.</li>
+            <li><strong>Ricerca Manuale:</strong> Clicca sulla barra "Ricerca Prodotto / Barcode" e digita il nome (es. "Profumo"). Clicca sul prodotto che appare nel menu a tendina.</li>
+            <li>
+                <strong>Vendita Libera (Numpad) e Tasti Rapidi:</strong> Se il prodotto non ha codice, clicca su <strong>🖩 TASTIERINO</strong>. Seleziona il Reparto desiderato, digita l'importo e premi Invio.<br>
+                <em>💡 Suggerimento:</em> Cliccando su <strong>⚙️ PERSONALIZZA TASTI</strong> potrai scegliere quali categorie mostrare come bottoni veloci.
+            </li>
+        </ul>
+
+        <h3>Sconti e Autorizzazioni Manager</h3>
+        <p>Se devi applicare uno sconto globale o annullare uno scontrino, il sistema verificherà il tuo livello di permessi.</p>
+        <ul>
+            <li>Se il tuo ruolo prevede un <strong>limite massimo di sconto</strong> (es. 5%) e provi a superarlo, il sistema bloccherà l'operazione.</li>
+            <li>In caso di <strong>Annullamento Scontrino</strong> o sconto eccessivo, apparirà una finestra rossa: sarà necessario l'intervento di un Manager o del Titolare, che dovrà inserire il proprio PIN per sbloccare e autorizzare l'operazione.</li>
+        </ul>
+
+        <h3>Chiudere lo Scontrino e Pagare</h3>
+        <ol>
+            <li>Associa un cliente passandogli la tessera (o inserendo il numero).</li>
+            <li>Clicca sul tasto verde <strong>💶 CASSA</strong>.</li>
+            <li>Seleziona il metodo di pagamento (<strong>CONTANTI</strong> o <strong>POS</strong>).</li>
+            <li>Verrà calcolato l'accredito dei punti e potrai inviargli un messaggio WhatsApp col nuovo saldo.</li>
+        </ol>
+
+        <h2 id="capitolo-3">🎁 3. SCONTI, VOUCHER E GIFT CARD</h2>
+        <h3>Riscatto Punti (Sconto Fidelity)</h3>
+        <p>Se il cliente ha accumulato abbastanza punti, il sistema ti avviserà automaticamente: <em>"Il cliente ha € X,00 di Bonus"</em>. Scegli se applicare lo sconto o conservarlo.</p>
+
+        <h3>Vendere o Pagare con Gift Card</h3>
+        <ol>
+            <li><strong>Emissione:</strong> Dal menu principale, vai su <strong>GIFT CARD</strong> e clicca <strong>EMETTI NUOVA</strong>. Scegli l'importo, paga lo scontrino e consegna il codice stampato.</li>
+            <li><strong>Pagamento:</strong> Usa la casella "VOUCHER O GIFT CARD" in cassa, digita il codice della carta del cliente e premi applica. L'importo verrà decurtato in automatico dal totale da pagare.</li>
+        </ol>
+
+        <h2 id="capitolo-4">🔄 4. GESTIONE RESI (Cambio Merce)</h2>
+        <p>Se un cliente riporta un articolo:</p>
+        <ol>
+            <li>Nel menu in basso a destra, clicca su <strong>🔄 RESO MERCE</strong>.</li>
+            <li>Spara il codice a barre dell'articolo restituito. Conferma il prezzo originale pagato dal cliente, il motivo del reso e lo stato (se rivendibile o da scartare).</li>
+            <li>Nello scontrino apparirà l'articolo in <strong>negativo</strong>.</li>
+            <li>Chiudi la cassa: il sistema stamperà un <strong>Buono Reso</strong> (Voucher) col codice a barre. Riconsegnalo al cliente per usarlo nei prossimi acquisti.</li>
+        </ol>
+
+        <h2 id="capitolo-5">📦 5. MAGAZZINO ED ETICHETTE</h2>
+        <ol>
+            <li>Dal Menu Principale, clicca su <strong>MAGAZZINO</strong>.</li>
+            <li>Clicca su <strong>NUOVO ARTICOLO</strong>. (I Commessi/Sales non vedono i costi d'acquisto reali).</li>
+            <li>Compila descrizione, prezzi e giacenze. Clicca su <strong>SALVA</strong>.</li>
+            <li><strong>Etichette:</strong> Dalla scheda del prodotto, usa il tasto <strong>🖨️ APRI CODA</strong> per inviare il prodotto al modulo di stampa. Dal modulo di stampa potrai scegliere il layout e stampare l'A4 coi codici a barre.</li>
+        </ol>
+
+        <h2 id="capitolo-6">📋 6. INVENTARIO E RICONCILIAZIONE MAGAZZINO</h2>
+        <div class="nota-rossa">⚠️ <strong>Funzione riservata:</strong> L'inserimento manuale delle giacenze e la Riconciliazione sono precluse al ruolo Sales.</div>
+        <ol>
+            <li>Entra in <strong>MAGAZZINO</strong> e clicca in alto su <strong>📋 INVENTARIO</strong>.</li>
+            <li>Filtra per Categoria/Scaffale e clicca <strong>🖨️ STAMPA PDF</strong> per avere il foglio di conta cartaceo.</li>
+            <li>Fatta la spunta fisica in negozio, torna al PC e clicca <strong>📝 RICONCILIA</strong>.</li>
+            <li>Modifica i numeri <strong>solo dove hai trovato differenze</strong>. La riga diventerà gialla.</li>
+            <li>Clicca su <strong>💾 SALVA RETTIFICHE</strong>. Ogni variazione verrà scritta nel registro di sicurezza con data, ora e nome dell'operatore che l'ha eseguita.</li>
+        </ol>
+
+        <h2 id="capitolo-7">💸 7. SPESE EXTRA E INCASSI</h2>
+        <p>Se prelevi soldi dalla cassa o metti monete per fondo cassa extra:</p>
+        <ul>
+            <li>Usa il tasto <strong>💰 USCITA CASSA</strong> per registrare una spesa (es. "Acquisto Cancelleria").</li>
+            <li>Usa il tasto <strong>☕ DISTRIBUTORE / ENTRATA</strong> per registrare un incasso fuori dalle vendite.</li>
+        </ul>
+
+        <h2 id="capitolo-8">🔒 8. CHIUSURA SERALE (Z-REPORT)</h2>
+        <p>Da fare <strong>TASSATIVAMENTE</strong> alla fine di ogni giornata lavorativa.</p>
+        <ol>
+            <li>Vai su <strong>CHIUSURA CASSA</strong>.</li>
+            <li>
+                Conta i soldi fisici nel cassetto e inseriscili nel grande campo giallo <strong>CONTEGGIO REALE</strong>.
+                <div class="nota">⚠️ <strong>Protezione Privacy:</strong> Se hai il ruolo "Sales", il sistema nasconderà l'importo teorico (mostrerà solo asterischi). Devi contare ciecamente i contanti e fidarti del totale. I manager e gli admin vedranno invece le differenze al centesimo in tempo reale.</div>
+            </li>
+            <li>Inserisci il <strong>Fondo Cassa</strong> che lascerai per il giorno dopo.</li>
+            <li>Clicca <strong>EMETTI CHIUSURA Z</strong>. La giornata sarà sigillata e blindata.</li>
+        </ol>
+
+        <h2 id="capitolo-9">📈 9. BUSINESS INTELLIGENCE (Per Manager e Titolari)</h2>
+        <p>La cabina di regia dei dati di vendita.</p>
+        <ul>
+            <li>Analisi del Margine Lordo Reale e scontrino medio.</li>
+            <li>Controllo <strong>Top 5 Prodotti</strong> per riordinare ciò che si vende di più.</li>
+            <li>Avviso <strong>Dead Stock</strong>: prodotti invenduti da oltre 6 mesi (da mettere in saldo!).</li>
+            <li>Liste semaforo per scovare i <strong>Clienti Dormienti</strong> (rossi) e ricontattarli per riportarli in negozio.</li>
+        </ul>
+
+        <h2 id="capitolo-10">🛡️ 10. SICUREZZA DEI DATI E BACKUP</h2>
+        <ul>
+            <li><strong>Cloud:</strong> Finché la spia è su 🟢 ONLINE, i dati volano su Firebase istantaneamente.</li>
+            <li><strong>Backup su Pendrive (Manuale e Obbligatorio):</strong> Se l'avviso rosso "Manca Backup" si attiva all'avvio, vai su <strong>Impostazioni ➡️ Salvataggio Dati</strong>, inserisci una chiavetta USB e clicca <strong>ESPORTA JSON</strong>. È la tua assicurazione in caso di disastri o furto del PC.</li>
+        </ul>
+
+        <h2 id="capitolo-11">👥 11. GESTIONE OPERATORI E RUOLI (Solo Admin)</h2>
+        <p>Come Titolare (Admin), sei l'unico a poter assumere o rimuovere l'accesso ai dipendenti.</p>
+        <ol>
+            <li>Dal Menu Principale, clicca su <strong>IMPOSTAZIONI</strong> ➡️ <strong>GESTIONE OPERATORI E PERMESSI</strong>.</li>
+            <li><strong>Creare o Modificare:</strong> Puoi inserire il Nome del dipendente, scegliere il suo ruolo (Sales o Manager) e creargli un PIN personale a 4 cifre (che non deve coincidere con quello di nessun altro).</li>
+            <li><strong>Limite Sconto:</strong> Scegli con cura la percentuale massima. Se gli assegni "5%", il commesso non potrà fare sconti superiori al 5% se non chiamandoti per inserire il tuo PIN di Override.</li>
+            <li>Cliccando sull'icona della matita ✏️ potrai modificare il PIN di un dipendente che lo ha dimenticato. Cliccando sul cestino 🗑️, gli revocherai l'accesso al gestionale istantaneamente.</li>
+        </ol>
+
+        <h2 id="capitolo-12">🧪 12. GESTIONE PROFUMI ALLA SPINA E DISTINTA BASE (BOM) DINAMICA</h2>
+        <p>Il gestionale utilizza un sistema avanzato chiamato <b>Distinta Base Dinamica (BOM - Bill of Materials)</b>. Invece di creare migliaia di articoli diversi per ogni profumo e ogni formato, il sistema scompone il profumo nei suoi elementi base (liquido, flacone, tappo) e li unisce in automatico solo nel momento della vendita in cassa.</p>
+        <p>Per far funzionare questo sistema, devi caricare i prodotti seguendo una logica precisa. Ecco gli esempi di compilazione:</p>
+
+        <h3>ESEMPIO 1: Carico di un Accessorio (Il Tappo)</h3>
+        <p>Serve a scaricare correttamente l'inventario del packaging e calcolare i costi.</p>
+        <ul>
+            <li><b>Codice / Barcode:</b> TAPPO-SPRAY-ORO</li>
+            <li><b>Settore / Categoria:</b> Packaging</li>
+            <li><b>Descrizione Articolo:</b> Tappo Spray Oro Standard</li>
+            <li><b>Giacenza Pz:</b> 500 <i>(Quanti tappi fisici hai contato)</i></li>
+            <li><b>Scorta Minima:</b> 100</li>
+            <li><b>Costo Acquisto Netto:</b> 0,20 <i>(Costo del singolo tappo)</i></li>
+            <li><b>Prezzo Listino (Ivato):</b> 0,00</li>
+            <li><b>ABILITA COME KIT / COFANETTO:</b> NON SPUNTATO</li>
+            <li><b>È UN FORMATO BASE ALLA SPINA:</b> NON SPUNTATO</li>
+        </ul>
+
+        <h3>ESEMPIO 2: Carico del Packaging (Il Flacone vuoto)</h3>
+        <p>Come per i tappi, questo articolo serve a tenere traccia delle boccette fisiche.</p>
+        <ul>
+            <li><b>Codice / Barcode:</b> FLAC-VETRO-50</li>
+            <li><b>Settore / Categoria:</b> Packaging</li>
+            <li><b>Descrizione Articolo:</b> Flacone Vetro Neutro 50ml</li>
+            <li><b>Formato / Tipo:</b> 50ml</li>
+            <li><b>Giacenza Pz:</b> 200</li>
+            <li><b>Scorta Minima:</b> 50</li>
+            <li><b>Costo Acquisto Netto:</b> 1,50 <i>(Costo della singola boccetta)</i></li>
+            <li><b>Prezzo Listino (Ivato):</b> 0,00</li>
+            <li><b>ABILITA COME KIT / COFANETTO:</b> NON SPUNTATO</li>
+            <li><b>È UN FORMATO BASE ALLA SPINA:</b> NON SPUNTATO</li>
+        </ul>
+
+        <h3>ESEMPIO 3: La Fragranza Madre (Il Fusto di Essenza)</h3>
+        <p>Questo è il liquido puro che compri dal fornitore. Non si vende mai da solo, ma fornisce i millilitri e i dati normativi (INCI, Lotto) per l'etichetta finale.</p>
+        <ul>
+            <li><b>Codice / Barcode:</b> ESS-OUD12 <i>(Puoi usare il tasto 🎲)</i></li>
+            <li><b>Settore / Categoria:</b> Materie Prime / Essenze</li>
+            <li><b>Descrizione Articolo:</b> Essenza Oud Intense N. 12 (Fusto)</li>
+            <li><b>Formato / Tipo:</b> ml <i>(Fondamentale per la tracciabilità volumetrica)</i></li>
+            <li><b>INCI e Allergeni:</b> Alcohol Denat, Parfum, Aqua, Linalool, Limonene... <i>(Obbligatorio per stampa etichetta)</i></li>
+            <li><b>Giacenza (ml/Pz):</b> 1000 <i>(Usa l'assistente verde se ti arrivano es. 4 latte da 250ml)</i></li>
+            <li><b>Scorta Minima:</b> 200</li>
+            <li><b>Costo Acquisto Netto:</b> 0,15 <i>(ATTENZIONE: Inserisci il costo di UN SINGOLO millilitro)</i></li>
+            <li><b>Prezzo Listino (Ivato):</b> 0,00 <i>(Il gestionale non bloccherà il salvataggio a 0)</i></li>
+            <li><b>ABILITA COME KIT / COFANETTO:</b> NON SPUNTATO</li>
+            <li><b>È UN FORMATO BASE ALLA SPINA:</b> NON SPUNTATO</li>
+        </ul>
+
+        <h3>ESEMPIO 4: Il Formato Dinamico (Es. Classic 50ml)</h3>
+        <p>Questo è l'articolo "contenitore" che porti in cassa e batti nello scontrino. Ne creerai solo pochissimi (es. Classic 15ml, Classic 50ml, Nicchia 50ml).</p>
+        <ul>
+            <li><b>Codice / Barcode:</b> CLASSIC-50</li>
+            <li><b>Settore / Categoria:</b> Linea Classic</li>
+            <li><b>Descrizione Articolo:</b> Profumo Linea Classic 50ml</li>
+            <li><b>Formato / Tipo:</b> 50ml</li>
+            <li><b>Giacenza (ml/Pz):</b> 0 <i>(Lascia a zero, i pezzi sono determinati da tappi e flaconi!)</i></li>
+            <li><b>Costo Acquisto Netto:</b> 0,00 <i>(Si autocalcolerà in cassa sommando vetro + liquido)</i></li>
+            <li><b>Prezzo Listino (Ivato):</b> 19,90 <i>(Il prezzo di vendita al pubblico)</i></li>
+            <li>
+                <b>È UN FORMATO BASE ALLA SPINA:</b> ☑️ SPUNTATO
+                <ul>
+                    <li><b>Millilitri di liquido da prelevare:</b> 50</li>
+                </ul>
+            </li>
+            <li>
+                <b>ABILITA COME KIT / COFANETTO:</b> ☑️ SPUNTATO
+                <ul>
+                    <li><b>Tipo di Kit:</b> DINAMICO</li>
+                    <li>
+                        <b>Componenti</b> <i>(Cerca i componenti packaging)</i>:
+                        <ol>
+                            <li>Cerca <code>FLAC-VETRO-50</code> e premi INVIO (Q.tà 1)</li>
+                            <li>Cerca <code>TAPPO-SPRAY-ORO</code> e premi INVIO (Q.tà 1)</li>
+                        </ol>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+        <div style="background: #fff3cd; padding: 15px; border-left: 4px solid #ffc107; margin-top: 15px; border-radius: 4px;">
+            <b>⚠️ REGOLA D'ORO DEL FORMATO DINAMICO:</b><br>
+            Nella Distinta Base del Formato Dinamico devi inserire <b>SOLO il packaging (vetro, tappo, scatola)</b>. L'essenza (il liquido) NON va inserita qui. Sarà il gestionale a chiederti quale essenza versare nel momento esatto in cui scannerizzi questo codice in cassa!
+        </div>
+
+        <h2 id="capitolo-13">🏷️ 13. TRACCIABILITÀ LOTTI E SCADENZE (PAO)</h2>
+        <p>Il sistema integra un motore di tracciabilità avanzata (Reverse Traceability) indispensabile per la gestione a norma delle materie prime cosmetiche (come le fragranze sfuse).</p>
+
+        <h3>1. Inserimento Lotto e PAO in fase di Carico</h3>
+        <p>Quando ricevi la merce e utilizzi la funzione <b>📦 SPUNTA MERCE IN ARRIVO</b> (dal modulo Ordini), troverai un riquadro azzurro dedicato alla tracciabilità:</p>
+        <ul>
+            <li><b>Numero Lotto:</b> Inserisci il codice lotto stampato sul fusto dal produttore (es. L-2409XYZ). Se lo lasci vuoto, il sistema ne genererà uno interno automaticamente basato sulla data.</li>
+            <li><b>PAO (Mesi):</b> Inserisci i mesi di validità del prodotto dopo l'apertura (es. 36).</li>
+        </ul>
+
+        <h3>2. Scarico Automatico FIFO (First In, First Out)</h3>
+        <p>Non devi preoccuparti di scegliere quale lotto scalare in cassa. Quando vendi un profumo sfuso, il sistema cerca in automatico la tanica appartenente al <b>lotto più vecchio</b> (quello caricato per primo) e scala i millilitri da lì. Quando la tanica più vecchia si svuota, il sistema passa automaticamente al lotto successivo.</p>
+
+        <h3>3. Timer di Scadenza Intelligente (PAO)</h3>
+        <p>
+            Il timer di scadenza (PAO) non parte quando carichi la merce in magazzino, ma <b>parte automaticamente nel momento in cui vendi il primo millilitro</b> di quel fusto in cassa (segnando così la "Data di prima apertura").<br>
+            Se continui a vendere da un fusto che risulta aperto da più mesi rispetto al limite del PAO impostato, la cassa farà comparire un <b>avviso di allarme</b> a schermo, invitandoti a controllare l'integrità del liquido prima di darlo al cliente.
+        </p>
+
+        <h3>4. Ereditarietà sulle Etichette</h3>
+        <p>Quando mandi in stampa l'etichetta di un "Prodotto Finito" pronto per la vendita (es. Profumo Agrumato 50ml), il gestionale va a cercare qual è il fusto di liquido attualmente aperto e in uso nel magazzino, e <b>stampa il suo Lotto esatto sull'etichetta</b> adesiva destinata al flacone del cliente.</p>
+
+        <h3>5. Ricerca Inversa del Lotto (Reverse Traceability)</h3>
+        <p>In caso di richiamo di un prodotto difettoso da parte del fornitore, o di reazione allergica manifestata da un cliente, il sistema ti permette di rintracciare all'istante la filiera di vendita.</p>
+        <ul>
+            <li>Apri la <b>Scheda Articolo</b> in Magazzino.</li>
+            <li>Scorri in basso fino al riquadro giallo <b>Tracciabilità e Controlli</b>.</li>
+            <li>Nel campo di testo, inserisci il codice del lotto incriminato (es. L-1234) e premi il tasto azzurro <b>🔍 CERCA LOTTO</b>.</li>
+            <li>Il sistema scansionerà l'intero storico e ti mostrerà a schermo un elenco completo di <b>tutti i clienti, gli scontrini, le date e le quantità</b> di profumo venduto che contenevano esattamente quel lotto di liquido.</li>
+        </ul>
+
+        <h2 id="capitolo-14">💶 14. APPROFONDIMENTO: IL COSTO ACQUISTO AL MILLILITRO</h2>
+        <p>Un aspetto fondamentale per la corretta gestione dei profumi alla spina (e della logica dei formati dinamici) è l'inserimento del <b>Costo Acquisto Netto</b> riferito sempre a <b>un singolo millilitro</b>, e mai all'intero fusto. Ecco perché il gestionale è strutturato con questa precisione matematica:</p>
+
+        <h3>1. Calcolo del Margine di Guadagno Reale (Statistiche)</h3>
+        <p>Poiché il sistema non sa a priori quale flacone andrai a riempire (15ml, 30ml, 50ml), ha bisogno del costo base per fare le moltiplicazioni corrette in cassa. Esempio pratico (costo di 0,15€ al ml, vendita di un 50ml a 19,90€):</p>
+        <ul>
+            <li>Costo liquido versato: 50ml x 0,15€ = <b>7,50€</b></li>
+            <li>Costo del vetro e tappo: es. <b>1,50€</b></li>
+            <li>Costo Totale Prodotto: <b>9,00€</b></li>
+            <li>Il gestionale registra la vendita e calcola un utile netto reale di <b>10,90€</b> per quello specifico scontrino.</li>
+        </ul>
+
+        <h3>2. Valore Reale del Magazzino (Inventario)</h3>
+        <p>Per calcolare il capitale fermo in negozio, il gestionale moltiplica le giacenze residue per il loro valore base. Se ti rimangono 325ml di un'essenza a 0,15€/ml, il sistema calcolerà istantaneamente un valore di 48,75€. Se inserissi il costo del fusto intero, sarebbe impossibile dare un valore ai fusti parzialmente consumati.</p>
+
+        <h3>3. Indipendenza dai Formati del Fornitore</h3>
+        <p>I fornitori cambiano spesso i formati di vendita (es. latte da 250ml invece di 500ml) e i listini. Ragionando sempre al millilitro, avrai un metro di paragone assoluto per i tuoi costi:</p>
+        <ul>
+            <li>Acquisto di 250ml a 50€ ➔ <b>0,20€ al ml</b></li>
+            <li>Acquisto di 1000ml a 180€ ➔ <b>0,18€ al ml</b></li>
+        </ul>
+        <p>Capirai subito, senza fare complessi calcoli a mente, che il fusto grande ti fa risparmiare 2 centesimi per ogni goccia venduta, aumentando istantaneamente il tuo margine.</p>
+
+        <div style="background: #e6f2ff; padding: 15px; border-left: 4px solid #0055cc; margin-top: 20px; border-radius: 4px;">
+            <b>💡 Consiglio Pratico per il Carico Merci:</b><br>
+            Tieni sempre a portata di mano una calcolatrice. Quando ti arriva la fattura del fornitore, prendi il <b>prezzo totale netto</b> a cui hai pagato il fusto e dividilo per i <b>millilitri totali</b> che contiene. Il risultato (es. 0,12 o 0,18) è il numero magico da inserire nel campo <i>Costo Acquisto Netto</i>.
+        </div>
+
+        <div class="footer">
+            Manuale Operativo v2.0 - Gestionale PWA con Sicurezza RBAC
+        </div>
+    </div>
+
+</body>
+</html>
