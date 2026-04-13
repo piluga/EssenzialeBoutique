@@ -12,55 +12,38 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="modal-overlay overlay-primo-piano" id="modal-login" style="display: flex; background: #001229; z-index: 10000;">
-        <div class="modal-box" style="width: 400px; border-color: #00ffcc; box-shadow: 0 0 30px rgba(0, 255, 204, 0.2);">
-            <div style="font-size: 60px; margin-bottom: 10px; filter: drop-shadow(0 0 10px #00ffcc);">🔒</div>
-            <div class="modal-titolo" style="color: #00ffcc; font-size: 3vh;">ACCESSO RISERVATO</div>
-            <p style="color: #b3d9ff; font-size: 1.8vh; margin-bottom: 25px;">Inserisci il PIN per sbloccare il gestionale</p>
-
-            <form onsubmit="event.preventDefault(); sbloccaApp();">
-                <div class="crm-form-group">
-                    <input type="password" id="login-pin" class="crm-input" placeholder="•••••" inputmode="numeric" autocomplete="current-password" style="text-align: center; font-size: 4vh; letter-spacing: 10px; height: 70px;">
-                </div>
-
-                <div class="modal-bottoniera" style="margin-top: 30px;">
-                    <button type="submit" class="btn-modal btn-verde" style="width: 100%; font-size: 2.2vh; padding: 15px;">SBLOCCA CASSA 🔓</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div class="system-bar">
+    <div class="system-bar" style="position: relative; z-index: 60; background: linear-gradient(to bottom, #001229, #000a17); border-bottom: 2px solid #bf953f; box-shadow: 0 4px 15px rgba(191, 149, 63, 0.15);">
         <div class="sys-left">
             <span id="sys-wifi" class="wifi-online">🟢 ONLINE</span>
-            <span id="sys-data" style="margin-left: 15px;">--/--/----</span>
+            <span id="sys-data" style="margin-left: 15px; color: #fbf5b7;">--/--/----</span>
         </div>
-        <div class="sys-center" style="display:flex; align-items:center; justify-content:center; gap: 15px;">
-            CASSA GESTIONALE PWA
-            <button onclick="apriModaleOperatore()" style="background: rgba(255,255,255,0.1); border: 1px solid #4d88ff; color: #fff; border-radius: 4px; padding: 2px 10px; font-size: 1.5vh; cursor:pointer; transition: 0.2s;" onmouseover="this.style.background='rgba(77,136,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
-                👤 <span id="label-operatore">Admin</span>
+        <div class="sys-center" style="display:flex; align-items:center; justify-content:center; gap: 15px; font-family: 'Cinzel', serif; font-size: 2vh; letter-spacing: 3px; font-weight: 700; background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c); -webkit-background-clip: text; background-clip: text; color: transparent;">
+            ESSENZIALE BOUTIQUE
+            <button onclick="bloccaCassa()" style="background: rgba(191, 149, 63, 0.1); border: 1px solid #bf953f; border-radius: 4px; padding: 2px 10px; font-size: 1.5vh; cursor:pointer; transition: 0.2s; font-family: sans-serif; letter-spacing: normal;" onmouseover="this.style.background='rgba(191, 149, 63, 0.3)'" onmouseout="this.style.background='rgba(191, 149, 63, 0.1)'">
+                <span id="label-operatore" style="font-weight: bold; color: #fcf6ba;">🔒 Bloccato</span>
             </button>
         </div>
         <div class="sys-right">
-            <span id="sys-orologio">00:00:00</span>
+            <span id="sys-orologio" style="color: #fbf5b7;">00:00:00</span>
         </div>
     </div>
 
     <div class="sezione-tasti">
-        <div class="tasto-fisico"><img src="icone/esci.png" class="icona-img" onerror="this.style.display='none'; this.insertAdjacentText('afterend', '🚪');"></div>
-        <div class="tasto-fisico"><img src="icone/whatsapp.png" class="icona-img" onerror="this.style.display='none'; this.insertAdjacentText('afterend', '💬');"></div>
-        <div class="tasto-fisico"><img src="icone/telegram.png" class="icona-img" onerror="this.style.display='none'; this.insertAdjacentText('afterend', '✈️');"></div>
-        <div class="tasto-fisico" id="btn-magazzino"><img src="icone/dropbox.png" class="icona-img" onerror="this.style.display='none'; this.insertAdjacentText('afterend', '📦');"></div>
-        <div class="tasto-fisico" id="btn-statistiche"><img src="icone/statistiche.png" class="icona-img" onerror="this.style.display='none'; this.insertAdjacentText('afterend', '📈');"></div>
-        <div class="tasto-fisico" id="btn-preferiti"><img src="icone/preferiti.png" class="icona-img" onerror="this.style.display='none'; this.insertAdjacentText('afterend', '⭐');"></div>
-        <div class="tasto-fisico" id="btn-clienti"><img src="icone/clienti.png" class="icona-img" onerror="this.style.display='none'; this.insertAdjacentText('afterend', '👥');"></div>
-        <div class="tasto-fisico"><img src="icone/riconoscimento.png" class="icona-img" onerror="this.style.display='none'; this.insertAdjacentText('afterend', '👤');"></div>
+        <div class="tasto-fisico" id="btn-esci"><img src="icone/esci.png" class="icona-img" onerror="this.style.display='none'; this.insertAdjacentText('afterend', '🚪');"></div>
         <div class="tasto-fisico" id="btn-calendario"><img src="icone/calendario.png" class="icona-img" onerror="this.style.display='none'; this.insertAdjacentText('afterend', '📅');"></div>
         <div class="tasto-fisico" id="btn-contabilita"><img src="icone/contabilita.png" class="icona-img" onerror="this.style.display='none'; this.insertAdjacentText('afterend', '🧾');"></div>
         <div class="tasto-fisico" id="btn-calcolatrice"><img src="icone/calcolatrice.png" class="icona-img" onerror="this.style.display='none'; this.insertAdjacentText('afterend', '🧮');"></div>
-        <div class="tasto-fisico" id="btn-cestino"><img src="icone/cestino.png" class="icona-img" onerror="this.style.display='none'; this.insertAdjacentText('afterend', '🗑️');"></div>
+        <div class="tasto-fisico" id="btn-statistiche"><img src="icone/statistiche.png" class="icona-img" onerror="this.style.display='none'; this.insertAdjacentText('afterend', '📈');"></div>
+        <div class="tasto-fisico" id="btn-preferiti"><img src="icone/preferiti.png" class="icona-img" onerror="this.style.display='none'; this.insertAdjacentText('afterend', '⭐');"></div>
+        <div class="tasto-fisico" id="btn-clienti"><img src="icone/clienti.png" class="icona-img" onerror="this.style.display='none'; this.insertAdjacentText('afterend', '👥');"></div>
+        <div class="tasto-fisico"></div>
+        <div class="tasto-fisico"></div>
+        <div class="tasto-fisico"></div>
+        <div class="tasto-fisico"></div>
+        <div class="tasto-fisico"></div>
+
         <div class="tasto-fisico" id="btn-dipendente"><img src="icone/dipendente.png" class="icona-img" onerror="this.style.display='none'; this.insertAdjacentText('afterend', '👨‍💼');"></div>
-        <div class="tasto-fisico" id="btn-macchinetta"><img src="icone/macchinetta.png" class="icona-img" onerror="this.style.display='none'; this.insertAdjacentText('afterend', '🏪');"></div>
+        <div class="tasto-fisico" id="btn-registro"><img src="icone/note.png" class="icona-img" onerror="this.style.display='none'; this.insertAdjacentText('afterend', '📓');"></div>
 
         <div class="tasto-fisico" onclick="apriModaleEmissioneGiftCard()">
             <div style="text-align: center;">
@@ -68,11 +51,11 @@
             </div>
         </div>
 
-        <div class="schermo-totale-container">
+        <div class="schermo-totale-container" style="height: 96% !important;">
             <input type="text" class="schermo-totale" id="display-totale" value="€ 0,00" inputmode="decimal">
         </div>
         <div class="tasto-fisico" id="btn-cassa"><img src="icone/pos.png" class="icona-img" onerror="this.style.display='none'; this.insertAdjacentText('afterend', '📠');"></div>
-        <div class="tasto-fisico" id="btn-registro"><img src="icone/note.png" class="icona-img" onerror="this.style.display='none'; this.insertAdjacentText('afterend', '📓');"></div>
+        <div class="tasto-fisico" id="btn-cestino"><img src="icone/cestino.png" class="icona-img" onerror="this.style.display='none'; this.insertAdjacentText('afterend', '🗑️');"></div>
     </div>
 
     <div class="barra-avvisi" id="barra-avvisi">
@@ -86,7 +69,7 @@
     </div>
 
     <div class="barra-strumenti">
-        <div class="wrapper-dropdown" style="flex: 1;">
+        <div class="wrapper-dropdown" style="flex: 0.8; height: 70% !important;">
             <input type="text" id="campo-sconto" class="input-fisico" placeholder="APPLICA SCONTO" readonly style="width: 100%; box-sizing: border-box; margin: 0;">
             <div class="lista-dropdown">
                 <div class="voce-lista opt-sconto" data-sconto="5">Sconto 5%</div>
@@ -97,7 +80,7 @@
             </div>
         </div>
 
-        <div class="wrapper-dropdown" style="flex: 1;">
+        <div class="wrapper-dropdown" style="flex: 0.8; height: 70% !important;">
             <input type="text" id="campo-pagamento" class="input-fisico" placeholder="TIPO PAGAMENTO" readonly style="width: 100%; box-sizing: border-box; margin: 0;">
             <div class="lista-dropdown">
                 <div class="voce-lista opt-pagamento" data-icona="💵">Contanti</div>
@@ -105,15 +88,15 @@
             </div>
         </div>
 
-        <input type="text" inputmode="numeric" id="campo-scheda" class="input-fisico" placeholder="TEL O NUMERO SCHEDA" disabled style="flex: 1; height: 80% !important; margin: 0; box-sizing: border-box;">
+        <input type="text" inputmode="numeric" id="campo-scheda" class="input-fisico" placeholder="TEL O NUMERO SCHEDA" disabled style="flex: 0.4; height: 70% !important; margin: 0; box-sizing: border-box;">
 
-        <div id="sezione-voucher" style="display: flex; gap: 5px; height: 80% !important; align-items: center; flex: 1.2;">
+        <div id="sezione-voucher" style="display: flex; gap: 5px; height: 70% !important; align-items: center; flex: 1.2;">
             <input type="text" id="cassa-voucher-input" class="input-fisico" placeholder="VOUCHER / GIFT CARD" style="height: 100% !important; margin: 0; flex: 1; border: 1px dashed #ffcc00; box-sizing: border-box;">
             <button class="btn-modal" style="background: #ffcc00; color: black; font-weight: bold; padding: 0 15px; height: 100% !important; margin: 0; border-radius: 4px; font-size: 1.8vh; white-space: nowrap; box-sizing: border-box;" onclick="applicaVoucherCassa()">APPLICA</button>
         </div>
 
-        <div class="wrapper-dropdown-largo" style="flex: 2;">
-            <div style="display: flex; gap: 10px; height: 100%; width: 100%; align-items: center;">
+        <div class="wrapper-dropdown-largo" style="flex: 2; height: 70% !important;">
+            <div style="display: flex; gap: 5px; height: 100%; width: 100%; align-items: center;">
                 <input type="text" id="campo-barcode" class="input-fisico input-barcode" placeholder="BARCODE / RICERCA NOME" disabled style="height: 100% !important; margin: 0; flex-grow: 1; box-sizing: border-box;">
                 <button class="btn-modal btn-rosso" style="padding: 0 20px; font-weight: bold; height: 100% !important; margin: 0; border-radius: 4px; font-size: 1.8vh; white-space: nowrap; box-sizing: border-box;" onclick="apriModaleReso()">RESO</button>
             </div>
@@ -121,14 +104,14 @@
         </div>
     </div>
 
-    <div class="pannello-tabella">
+    <div class="pannello-tabella" style="margin-top: -4px !important;">
         <div class="testata-tabella">
             <div>CODICE</div><div>DESCRIZIONE</div><div>GIACENZA</div><div>PREZZO</div><div>QUANTITÀ</div><div>CATEGORIA</div><div>TOTALE</div>
         </div>
         <div class="area-dati-tabella" id="area-dati-tabella"></div>
     </div>
 
-    <div class="modal-overlay overlay-primo-piano" id="modal-conferma-elimina">
+    <div class="modal-overlay overlay-primo-piano" id="modal-conferma-elimina" style="z-index: 10005 !important;">
         <div class="modal-box" style="width: 450px; border-color: #ff4d4d;">
             <div class="modal-titolo" style="color: #ff4d4d;">🗑️ CONFERMA ELIMINAZIONE</div>
             <p id="msg-conferma-elimina" style="font-size: 2.2vh; margin-bottom: 25px; line-height: 1.4;">Sei sicuro di voler ELIMINARE DEFINITIVAMENTE questo dato?</p>
@@ -199,15 +182,34 @@
     </div>
 
     <div class="modal-overlay" id="modal-calc-categorie">
-        <div class="modal-box" style="width: 500px;">
-            <div class="modal-titolo">SELEZIONA REPARTO</div>
-            <p>A quale categoria appartiene il prodotto?</p>
-            <div style="display: flex; justify-content: space-around; margin-top: 25px;">
-                <div class="tasto-fisico tasto-categoria" onclick="apriNumpad('CBD')"><span class="icona">🌿</span><span class="testo">CBD</span></div>
-                <div class="tasto-fisico tasto-categoria" onclick="apriNumpad('HHC')"><span class="icona">💨</span><span class="testo">HHC</span></div>
-                <div class="tasto-fisico tasto-categoria" onclick="apriNumpad('ALTRO')"><span class="icona">📦</span><span class="testo">ALTRO</span></div>
+        <div class="modal-box" style="width: 600px; max-width: 95vw;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #444; padding-bottom: 10px;">
+                <div class="modal-titolo" style="margin: 0;">SELEZIONA REPARTO</div>
+                <button class="btn-modal" style="background: transparent; border: 1px solid #4d88ff; color: #b3d9ff; padding: 5px 15px; font-size: 1.2vh; margin: 0;" onclick="apriConfigurazioneTastiCassa()">⚙️ PERSONALIZZA TASTI</button>
             </div>
-            <div class="modal-bottoniera" style="margin-top: 30px;"><button class="btn-modal btn-grigio" onclick="chiudiModale('modal-calc-categorie')">ANNULLA</button></div>
+            <p style="color: #888; font-size: 1.6vh; margin-top: 10px;">Seleziona il reparto per registrare l'importo libero.</p>
+
+            <div id="contenitore-tasti-reparto" style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin-top: 15px; max-height: 400px; overflow-y: auto; padding: 10px;">
+            </div>
+
+            <div class="modal-bottoniera" style="margin-top: 20px;">
+                <button class="btn-modal btn-grigio" onclick="chiudiModale('modal-calc-categorie')">ANNULLA</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="modal-config-tasti-cassa" style="display: none; z-index: 9999;">
+        <div class="modal-box" style="width: 500px; max-width: 95vw; border-color: #ffcc00;">
+            <div class="modal-titolo" style="color: #ffcc00; margin-bottom: 5px;">⚙️ CONFIGURA TASTI RAPIDI</div>
+            <p style="color: #b3d9ff; font-size: 1.4vh; margin-bottom: 15px;">Seleziona le categorie da mostrare come pulsanti veloci nella Cassa (consigliato: max 10).</p>
+
+            <div id="lista-check-categorie" style="max-height: 350px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px solid #333;">
+            </div>
+
+            <div class="modal-bottoniera" style="margin-top: 25px;">
+                <button class="btn-modal btn-grigio" onclick="chiudiModale('modal-config-tasti-cassa')">ANNULLA</button>
+                <button class="btn-modal btn-verde" onclick="salvaConfigurazioneTastiCassa()" style="font-weight: bold;">💾 SALVA CONFIGURAZIONE</button>
+            </div>
         </div>
     </div>
 
@@ -240,7 +242,7 @@
     <div class="modal-overlay" id="modal-gestione-clienti">
         <div class="modal-box modal-grande modal-full">
             <div class="crm-left">
-                <div class="modal-titolo" style="font-size: 2.5vh;">RUBRICA CLIENTI <span id="crm-totale-clienti" style="font-size: 1.5vh; color: #b3d9ff; margin-left: 10px;">(0)</span></div>
+                <div class="modal-titolo" style="font-size: 3.0vh;">🙎🏼‍♂️​ RUBRICA CLIENTI <span id="crm-totale-clienti" style="font-size: 1.9vh; color: #b3d9ff; margin-left: 10px;">(0)</span></div>
                 <input type="text" id="crm-search" class="crm-search" placeholder="🔍 Cerca per Nome, Telefono o Codice...">
                 <div class="crm-list" id="crm-list"></div>
             </div>
@@ -254,7 +256,6 @@
                         <label class="crm-label">Codice Scheda / Barcode</label>
                         <div style="display: flex; gap: 5px;">
                             <input type="text" id="crm-codice" class="crm-input" placeholder="Es. 1234567890123" inputmode="numeric">
-
                             <button id="btn-genera-scheda" class="btn-genera" onclick="generaCodiceSchedaUnivoco()" title="Genera">🎲 GENERA</button>
                         </div>
                     </div>
@@ -280,7 +281,7 @@
                 </div>
                 <div class="crm-stats">
                     <div class="crm-stat-box"><div class="crm-stat-val" id="crm-calc-bonus">€ 0</div><div class="crm-stat-lbl">Bonus Calcolato</div></div>
-                    <div class="crm-stat-box"><div class="crm-stat-val" id="crm-calc-data" style="color: #00ffcc; font-size: 3vh; line-height: 4vh;">-</div><div class="crm-stat-lbl">Ultima Operazione</div></div>
+                    <div class="crm-stat-box"><div class="crm-stat-val" id="crm-calc-data" style="color: #00ffcc; font-size: 3vh; line-height: 5.5vh;">-</div><div class="crm-stat-lbl">Ultima Operazione</div></div>
                 </div>
                 <div class="modal-bottoniera" style="margin-top: auto;">
                     <button class="btn-modal btn-grigio" onclick="crmNuovoCliente()" style="flex: 1;">PULISCI / NUOVO</button>
@@ -295,11 +296,12 @@
         <div class="modal-box modal-grande modal-full">
 
             <div class="crm-left">
-                <div class="modal-titolo" style="font-size: 2.5vh;">📦 GESTIONE MAGAZZINO</div>
-                <input type="text" id="mag-search" class="crm-search" placeholder="🔍 Cerca per Codice, Descrizione o Categoria...">
-                <div class="crm-list" id="mag-list">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <div class="modal-titolo" style="font-size: 3vh; margin: 0;">📦 GESTIONE MAGAZZINO</div>
+                    <button class="btn-modal" style="background: #9933ff; color: black; padding: 5px 15px; font-size: 1.8vh; margin: 0;" onclick="apriModaleInventario()">📋 INVENTARIO</button>
                 </div>
-
+                <input type="text" id="mag-search" class="crm-search" placeholder="🔍 Cerca per Codice, Descrizione o Categoria...">
+                <div class="crm-list" id="mag-list"></div>
                 <div style="display: flex; gap: 10px; margin-top: 15px; border-top: 1px solid #4d88ff; padding-top: 10px;">
                     <div style="flex: 1; text-align: center;">
                         <div style="font-size: 1.5vh; color: #b3d9ff; text-transform: uppercase;">Articoli Totali</div>
@@ -315,74 +317,114 @@
             <div class="crm-right" style="display: flex; flex-direction: column; overflow: hidden;">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; margin-bottom: 15px; flex-shrink: 0;">
                     <div class="modal-titolo" style="font-size: 2.5vh; margin: 0;" id="mag-titolo-scheda">SCHEDA ARTICOLO</div>
-                    <button class="btn-modal btn-grigio" onclick="chiudiModulo('modal-magazzino')" style="padding: 5px 15px;">CHIUDI</button>
+                    <button class="btn-modal btn-grigio" onclick="chiudiModulo('modal-magazzino'); apriModale('modal-menu-principale');" style="padding: 5px 15px;">CHIUDI</button>
                 </div>
 
                 <div style="overflow-y: auto; flex-grow: 1; padding-right: 10px; margin-bottom: 15px;" id="mag-form-scroll">
 
                     <div style="display: flex; gap: 15px; margin-bottom: 15px;">
-                        <div class="crm-form-group" style="flex: 1.5; margin-bottom: 0;">
+                        <div class="crm-form-group" style="flex: 0.85; margin-bottom: 0;">
                             <label class="crm-label">Codice / Barcode</label>
-                            <div style="display: flex; gap: 5px; height: 45px;">
-                                <input type="text" id="mag-codice" class="crm-input" placeholder="Es. 800123456789" style="margin: 0; height: 100%;">
-                                <button id="btn-genera-mag-codice" class="btn-genera" onclick="generaCodiceMagazzinoUnivoco()" title="Genera un codice a barre interno" style="margin: 0; height: 100%; padding: 0 15px;">🎲</button>
+                            <div style="display: flex; gap: 5px; height: 35px;">
+                                <input type="text" id="mag-codice" class="crm-input" placeholder="" style="margin: 0; height: 100%;">
+                                <button id="btn-genera-mag-codice" class="btn-genera" onclick="generaCodiceMagazzinoUnivoco()" title="Genera un codice a barre interno"
+                                        style="margin: 0; height: 100%; padding: 0 15px; background: #4d88ff; border-color: #4d88ff; color: white; font-size: 18px;">
+                                    🎲
+                                </button>
                             </div>
                         </div>
                         <div class="crm-form-group" style="flex: 1; margin-bottom: 0;">
                             <label class="crm-label">Settore / Categoria</label>
-                            <div style="display: flex; gap: 5px; height: 45px;">
-                                <select id="mag-categoria" class="crm-input" style="margin: 0; height: 100%; flex-grow: 1;">
+                            <div style="display: flex; gap: 5px; height: 35px;">
+                                <select id="mag-categoria" class="crm-input"
+                                        style="margin: 0; height: 100%; flex-grow: 1; font-size: 16px; padding: 5px;">
                                 </select>
-                                <button class="btn-genera" onclick="apriModaleGestioneCategorie()" title="Gestisci Categorie" style="margin: 0; height: 100%; padding: 0 15px; background: #4d88ff; border-color: #4d88ff; color: white;">⚙️</button>
+                                <button class="btn-genera" onclick="apriModaleGestioneCategorie()" title="Gestisci Categorie"
+                                        style="margin: 0; height: 100%; padding: 0 15px; background: #4d88ff; border-color: #4d88ff; color: white; font-size: 18px;">
+                                    ⚙️
+                                </button>
                             </div>
                         </div>
                         <div class="crm-form-group" style="flex: 1; margin-bottom: 0;">
-                            <label class="crm-label" style="color: #b3d9ff;">Fornitore</label>
-                            <input type="text" id="mag-fornitore" class="crm-input" placeholder="Es. L'Oréal / Distributore" style="margin: 0; height: 45px; text-transform: uppercase;">
+                            <label class="crm-label">FORNITORE</label>
+                            <div style="display: flex; gap: 5px; height: auto;">
+                                <input type="text" id="mag-fornitore" class="crm-input" placeholder=""
+                                       style="margin: 0; height: 35px !important; text-transform: uppercase; box-sizing: border-box;">
+                            </div>
                         </div>
                     </div>
 
                     <div class="crm-form-group">
                         <label class="crm-label">Descrizione Articolo (Nome Esteso)</label>
-                        <input type="text" id="mag-descrizione" class="crm-input" placeholder="Es. Acqua di Giò Profumo EDP 100ml">
+                        <input type="text" id="mag-descrizione" class="crm-input" placeholder=""
+                               style="height: 35px; width: 100%; box-sizing: border-box;">
                     </div>
 
                     <div style="display: flex; gap: 10px; background: rgba(255,255,255,0.05); padding: 10px; border-radius: 6px; margin-bottom: 15px; border-left: 3px solid #ffcc00;">
                         <div class="crm-form-group" style="flex: 1; margin-bottom: 0;">
-                            <label class="crm-label" style="font-size: 1.4vh;">Brand</label>
-                            <input type="text" id="mag-brand" class="crm-input" placeholder="Es. Giorgio Armani" style="font-size: 1.8vh; padding: 8px;">
+                            <label class="crm-label" style="font-size: 1.6vh;">Brand</label>
+                            <input type="text" id="mag-brand" class="crm-input" placeholder="" style="font-size: 1.8vh; padding: 8px;">
                         </div>
                         <div class="crm-form-group" style="flex: 1; margin-bottom: 0;">
-                            <label class="crm-label" style="font-size: 1.4vh;">Linea / Collezione</label>
-                            <input type="text" id="mag-linea" class="crm-input" placeholder="Es. Acqua di Giò" style="font-size: 1.8vh; padding: 8px;">
+                            <label class="crm-label" style="font-size: 1.6vh;">Linea / Collezione</label>
+                            <input type="text" id="mag-linea" class="crm-input" placeholder="" style="font-size: 1.8vh; padding: 8px;">
                         </div>
                         <div class="crm-form-group" style="flex: 0.8; margin-bottom: 0;">
-                            <label class="crm-label" style="font-size: 1.4vh;">Formato / Tipo</label>
-                            <input type="text" id="mag-formato" class="crm-input" placeholder="Es. 100ml / EDP" style="font-size: 1.8vh; padding: 8px;">
+                            <label class="crm-label" style="font-size: 1.6vh;">Formato / Tipo</label>
+                            <input type="text" id="mag-formato" class="crm-input" placeholder="" style="font-size: 1.8vh; padding: 8px;">
                         </div>
                     </div>
 
                     <div class="crm-form-group">
-                        <label class="crm-label">Note Olfattive / Dettagli Extra</label>
-                        <textarea id="mag-note" class="crm-input" style="resize: none; height: 60px; font-size: 1.6vh;" placeholder="Es. Note di testa: Bergamotto, Note marine..."></textarea>
+                        <label class="crm-label">Dettagli Extra</label>
+                        <textarea id="mag-note" class="crm-input" style="resize: none; height: 60px; font-size: 1.6vh;" placeholder=""></textarea>
                     </div>
 
-                    <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                        <div class="crm-form-group" style="flex: 1;">
-                            <label class="crm-label">Giacenza Pz</label>
-                            <input type="text" id="mag-giacenza" class="crm-input" placeholder="0" inputmode="numeric" style="text-align: center;">
+                    <div class="crm-form-group">
+                        <label class="crm-label" style="color: #b3d9ff;">INCI e Allergeni (Obbligatorio per Etichetta)</label>
+                        <textarea id="mag-inci" class="crm-input" style="resize: none; height: 50px; font-size: 1.4vh;" placeholder="Es. Alcohol Denat, Parfum, Aqua, Linalool, Limonene..."></textarea>
+                    </div>
+
+                    <div style="background: rgba(77, 136, 255, 0.05); border: 1px solid #4d88ff; border-radius: 6px; padding: 15px; margin-bottom: 15px;">
+
+                        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 15px;">
+                            <div class="modal-titolo" style="font-size: 2vh; margin: 0; color: #4d88ff;">📦 DATI MAGAZZINO E GIACENZA</div>
                         </div>
-                        <div class="crm-form-group" style="flex: 1;">
-                            <label class="crm-label">Ubicazione</label>
-                            <input type="text" id="mag-ubicazione" class="crm-input" placeholder="Scaffale / Cassetto" style="text-align: center;">
+
+                        <div style="background: rgba(0, 204, 102, 0.1); border: 1px dashed #00cc66; border-radius: 6px; padding: 10px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between;">
+                            <div style="color: #00cc66; font-size: 2vh; font-weight: bold;">⚡ ASSISTENTE CARICO RAPIDO (Per Liquidi)</div>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="text" id="mag-calc-flaconi" class="crm-input" placeholder="N. Flaconi" style="margin: 0; width: 100px; text-align: center; height: 35px;">
+                                <span style="color: white; font-weight: bold;">X</span>
+                                <input type="text" id="mag-calc-volume" class="crm-input" placeholder="Vol. (ml)" style="margin: 0; width: 100px; text-align: center; height: 35px;">
+                                <button type="button" class="btn-modal btn-verde" style="margin: 0; padding: 0 15px; height: 35px; border: 1px solid #00cc66; background: #00cc66; font-weight: bold; color: black;"
+                                        onclick="document.getElementById('mag-giacenza').value = (parseFloat(document.getElementById('mag-calc-flaconi').value)||0) * (parseFloat(document.getElementById('mag-calc-volume').value)||0); document.getElementById('mag-calc-flaconi').value=''; document.getElementById('mag-calc-volume').value='';">
+                                    CALCOLA ML
+                                </button>
+                            </div>
                         </div>
-                        <div class="crm-form-group" style="flex: 1;">
-                            <label class="crm-label">Lotto/Scadenza</label>
-                            <input type="text" id="mag-lotto" class="crm-input" placeholder="Es. L-102 (12/26)" style="text-align: center;">
-                        </div>
-                        <div class="crm-form-group" style="flex: 1;">
-                            <label class="crm-label">Scorta Minima</label>
-                            <input type="text" id="mag-scorta-min" class="crm-input" placeholder="0" inputmode="numeric" style="text-align: center;">
+
+                        <div style="display: flex; gap: 10px; margin-bottom: 0;">
+                            <div class="crm-form-group" style="flex: 1; margin-bottom: 0;">
+                                <label class="crm-label">Giacenza (ml/Pz)</label>
+                                <input type="text" id="mag-giacenza" class="crm-input" placeholder="0" inputmode="numeric"
+                                       style="text-align: center; height: 35px; font-size: 16px; box-sizing: border-box; width: 100%;">
+                            </div>
+                            <div class="crm-form-group" style="flex: 1; margin-bottom: 0;">
+                                <label class="crm-label">Ubicazione</label>
+                                <input type="text" id="mag-ubicazione" class="crm-input" placeholder=""
+                                       style="text-align: center; height: 35px; font-size: 16px; box-sizing: border-box; width: 100%;">
+                            </div>
+                            <div class="crm-form-group" style="flex: 1; margin-bottom: 0;">
+                                <label class="crm-label">Lotto/Scadenza</label>
+                                <input type="text" id="mag-lotto" class="crm-input" placeholder=""
+                                       style="text-align: center; height: 35px; font-size: 16px; box-sizing: border-box; width: 100%;">
+                            </div>
+                            <div class="crm-form-group" style="flex: 1; margin-bottom: 0;">
+                                <label class="crm-label">Scorta Minima</label>
+                                <input type="text" id="mag-scorta-min" class="crm-input" placeholder="0" inputmode="numeric"
+                                       style="text-align: center; height: 35px; font-size: 16px; box-sizing: border-box; width: 100%;">
+                            </div>
                         </div>
                     </div>
 
@@ -391,22 +433,37 @@
                             <div class="modal-titolo" style="font-size: 2vh; margin: 0; color: #00cc66;">💰 PREZZI E MARGINI</div>
                             <div style="font-size: 1.6vh; color: #b3d9ff;">Margine Teorico: <span id="mag-margine-calc" style="font-weight: bold; font-size: 2.2vh; color: #00ffcc;">0.00%</span></div>
                         </div>
+
+                        <div style="background: rgba(77, 136, 255, 0.1); border: 1px dashed #4d88ff; border-radius: 6px; padding: 10px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between;">
+                            <div style="color: #4d88ff; font-size: 1.6vh; font-weight: bold;">⚡ ASSISTENTE COSTO (€ per ml)</div>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="text" id="mag-calc-costo-fusto" class="crm-input" placeholder="Costo Tot. Fusto (€)" inputmode="decimal" style="margin: 0; width: 150px; text-align: center; height: 35px; font-size: 1.5vh;">
+                                <span style="color: white; font-weight: bold;">÷</span>
+                                <input type="number" id="mag-calc-ml-fusto" class="crm-input" placeholder="ml Totali Fusto" style="margin: 0; width: 130px; text-align: center; height: 35px; font-size: 1.5vh;">
+                                <button type="button" class="btn-modal btn-blu" style="margin: 0; padding: 0 15px; height: 35px; font-weight: bold; background: #4d88ff; border-color: #4d88ff;" onclick="let costoTot = parseFloat(document.getElementById('mag-calc-costo-fusto').value.replace(',', '.')) || 0; let mlTot = parseFloat(document.getElementById('mag-calc-ml-fusto').value) || 0; if(mlTot > 0) { document.getElementById('mag-prezzo-acq').value = (costoTot / mlTot).toFixed(3).replace('.', ','); if(typeof calcolaMargine === 'function') calcolaMargine(); } document.getElementById('mag-calc-costo-fusto').value = ''; document.getElementById('mag-calc-ml-fusto').value = '';">CALCOLA €/ml</button>
+                            </div>
+                        </div>
+
                         <div style="display: flex; gap: 10px;">
                             <div class="crm-form-group" style="flex: 1; margin-bottom: 0;">
-                                <label class="crm-label" style="font-size: 1.4vh;">Costo Acquisto Netto</label>
-                                <input type="text" id="mag-prezzo-acq" class="crm-input" placeholder="0,00" inputmode="decimal" style="text-align: center; color: #ffcc00;" oninput="calcolaMargine()">
+                                <label class="crm-label" style="font-size: 1.8vh;">Costo Acquisto Netto</label>
+                                <input type="text" id="mag-prezzo-acq" class="crm-input" placeholder="0,00" inputmode="decimal"
+                                       style="text-align: center; color: #0a0a0a; height: 35px; font-size: 16px; width: 100%; box-sizing: border-box; " oninput="calcolaMargine()">
                             </div>
                             <div class="crm-form-group" style="flex: 1; margin-bottom: 0;">
-                                <label class="crm-label" style="font-size: 1.4vh;">Prezzo Listino (Ivato)</label>
-                                <input type="text" id="mag-prezzo-ven" class="crm-input" placeholder="0,00" inputmode="decimal" style="text-align: center; color: #00ffcc; font-weight: bold;" oninput="calcolaMargine()">
+                                <label class="crm-label" style="font-size: 1.8vh;">Prezzo Listino (Ivato)</label>
+                                <input type="text" id="mag-prezzo-ven" class="crm-input" placeholder="0,00" inputmode="decimal"
+                                       style="text-align: center; color: #0a0a0a; font-weight: bold; height: 35px; font-size: 16px; width: 100%; box-sizing: border-box; " oninput="calcolaMargine()">
                             </div>
                             <div class="crm-form-group" style="flex: 0.8; margin-bottom: 0;">
-                                <label class="crm-label" style="font-size: 1.4vh;">Promo / Sconto (Ivato)</label>
-                                <input type="text" id="mag-prezzo-promo" class="crm-input" placeholder="0,00" inputmode="decimal" style="text-align: center; color: #ff6666;">
+                                <label class="crm-label" style="font-size: 1.8vh;">Promo / Sconto (Ivato)</label>
+                                <input type="text" id="mag-prezzo-promo" class="crm-input" placeholder="0,00" inputmode="decimal"
+                                       style="text-align: center; color: #fa0707; height: 35px; font-size: 16px; width: 100%; box-sizing: border-box; ">
                             </div>
                             <div class="crm-form-group" style="flex: 0.5; margin-bottom: 0;">
-                                <label class="crm-label" style="font-size: 1.4vh;">IVA (%)</label>
-                                <input type="text" id="mag-iva" class="crm-input" placeholder="22" inputmode="numeric" style="text-align: center;">
+                                <label class="crm-label" style="font-size: 1.8vh;">IVA (%)</label>
+                                <input type="text" id="mag-iva" class="crm-input" placeholder="22" inputmode="numeric"
+                                       style="text-align: center; height: 35px; font-size: 16px; width: 100%; box-sizing: border-box;">
                             </div>
                         </div>
                     </div>
@@ -414,7 +471,7 @@
                     <div style="display: flex; gap: 15px; margin-bottom: 15px;">
                         <div class="crm-form-group" style="flex: 1; display: flex; align-items: center; justify-content: space-between; background: rgba(255, 77, 77, 0.1); padding: 10px; border-radius: 6px; border: 1px solid #ff4d4d; margin-bottom: 0;">
                             <div>
-                                <label class="crm-label" style="margin: 0; color: #ff4d4d; font-size: 1.3vh;">Articolo Tester</label>
+                                <label class="crm-label" style="margin: 0; color: #ff4d4d; font-size: 2vh;">Articolo Tester</label>
                             </div>
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <button type="button" id="btn-converti-tester" class="btn-modal btn-rosso" style="padding: 5px; font-size: 1.2vh; margin: 0; display: none;" onclick="convertiUnitaInTester()">PRELEVA 1</button>
@@ -422,14 +479,43 @@
                             </div>
                         </div>
                         <div class="crm-form-group" style="flex: 0.8; margin-bottom: 0;">
-                            <label class="crm-label" style="color: #ffcc00; font-size: 1.3vh; text-align: center; display: block;">Punti Fedeltà</label>
+                            <label class="crm-label" style="color: #ffcc00; font-size: 2vh; text-align: center; display: block;">Punti Fedeltà</label>
                             <input type="text" id="mag-punti-fedelta" class="crm-input" placeholder="Se 0 usa default" inputmode="numeric" style="text-align: center; height: 35px; margin: 0; padding: 5px;">
                         </div>
                         <div class="crm-form-group" style="flex: 1; display: flex; align-items: center; justify-content: space-between; background: rgba(255, 255, 255, 0.05); padding: 10px; border-radius: 6px; border: 1px solid #4d88ff; margin-bottom: 0;">
                             <div>
-                                <label class="crm-label" style="margin: 0; color: #b3d9ff; font-size: 1.3vh;">Stampa Etichette</label>
+                                <label class="crm-label" style="margin: 0; color: #b3d9ff; font-size: 2vh;">Stampa Etichette</label>
                             </div>
-                            <button type="button" class="btn-modal btn-grigio" style="padding: 5px 10px; font-size: 1.2vh; margin: 0; border: 1px solid #4d88ff; color: #4d88ff;" onclick="apriCodaStampaDaMagazzino()">🖨️ APRI CODA</button>
+                            <button type="button" class="btn-modal btn-grigio" style="padding: 5px 10px; font-size: 2vh; margin: 0; border: 1px solid #4d88ff; background: #4d88ff;" onclick="apriCodaStampaDaMagazzino()">🖨️ APRI CODA</button>
+                        </div>
+                    </div>
+
+                    <!-- NUOVO BLOCCO: TRACCIABILITÀ INVENTARIO -->
+                    <div style="display: flex; gap: 15px; margin-bottom: 15px;">
+                        <div class="crm-form-group" style="flex: 1; display: flex; align-items: center; justify-content: space-between; background: rgba(255, 204, 0, 0.1); padding: 10px; border-radius: 6px; border: 1px solid #ffcc00; margin-bottom: 0;">
+                            <div>
+                                <label class="crm-label" style="margin: 0; color: #ffcc00; font-size: 2vh;">Tracciabilità e Controlli</label>
+                            </div>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="text" id="input-cerca-lotto" class="crm-input" placeholder="Es. L-2409" style="margin: 0; height: 30px; font-size: 2vh; width: 130px;">
+                                <button type="button" class="btn-modal btn-blu" style="padding: 5px 15px; font-size: 2vh; margin: 0; border: 1px solid #4d88ff; background: #4d88ff; color: black;" onclick="if(document.getElementById('input-cerca-lotto').value.trim() !== '') tracciabilitaInversaLotto(document.getElementById('input-cerca-lotto').value.trim())">🔍 CERCA LOTTO</button>
+
+                                <button type="button" class="btn-modal btn-grigio" style="padding: 5px 15px; font-size: 2vh; margin: 0; border: 1px solid #4d88ff; background: #4d88ff;" onclick="apriStoricoRettifiche()">📜 LOG RETTIFICHE</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="background: rgba(255, 153, 0, 0.1); border: 1px solid #ff9900; border-radius: 6px; padding: 15px; margin-bottom: 15px;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <input type="checkbox" id="mag-is-formato-spina" style="transform: scale(1.5);">
+                                <label class="crm-label" style="margin: 0; color: #ff9900; font-size: 2vh;">È UN FORMATO BASE ALLA SPINA</label>
+                            </div>
+                        </div>
+                        <p style="font-size: 1.8vh; color: #b3d9ff; margin-bottom: 15px;">Spunta questa opzione per i formati (es. Classic 50ml). In cassa il sistema ti chiederà quale essenza versare all'interno.</p>
+                        <div class="crm-form-group" style="width: 50%; margin-bottom: 0;">
+                            <label class="crm-label" style="color: #ffcc00;">Millilitri di liquido da prelevare:</label>
+                            <input type="number" id="mag-volume-spina" class="crm-input" placeholder="Es. 50" style="border-color: #ff9900;">
                         </div>
                     </div>
 
@@ -476,6 +562,21 @@
         </div>
     </div>
 
+    <div class="modal-overlay overlay-primo-piano" id="modal-scegli-essenza" style="z-index: 10500; display: none;">
+        <div class="modal-box" style="width: 500px; border-color: #ffcc00;">
+            <div class="modal-titolo" style="color: #ffcc00;">🧪 SCEGLI L'ESSENZA DA VERSARE</div>
+            <p id="scegli-essenza-desc" style="color: white; font-size: 1.8vh; margin-bottom: 15px;"></p>
+
+            <input type="text" id="cerca-essenza-cassa" class="crm-input" placeholder="🔍 Cerca nome essenza o spara il codice del fusto..." oninput="filtraEssenzeCassa(this.value)" style="font-size: 2vh; height: 45px;">
+
+            <div id="lista-essenze-cassa" style="max-height: 300px; overflow-y: auto; background: rgba(0,0,0,0.5); border-radius: 4px; padding: 10px; margin-top: 10px;"></div>
+
+            <div class="modal-bottoniera" style="margin-top: 20px;">
+                <button class="btn-modal btn-grigio" style="width: 100%;" onclick="chiudiModale('modal-scegli-essenza')">ANNULLA INSERIMENTO</button>
+            </div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="modal-registro-cassa">
         <div class="modal-box modal-grande modal-full">
             <div class="crm-left" style="background: rgba(0, 18, 41, 0.8);">
@@ -488,6 +589,10 @@
                 <div style="display: flex; gap: 10px;">
                     <div class="reg-card" style="flex: 1;"><div class="reg-lbl">Distributore</div><div class="reg-val verde" id="reg-tot-entrate">€ 0,00</div></div>
                     <div class="reg-card" style="flex: 1;"><div class="reg-lbl">Uscite / Spese</div><div class="reg-val rosso" id="reg-tot-uscite">€ 0,00</div></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 2.2vh; font-weight: bold; color: #00ffcc; margin-top: 10px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 10px;">
+                    <span>SALDO TOTALE (INCLUSO POS)</span>
+                    <span id="reg-saldo-totale">€ 0,00</span>
                 </div>
                 <div class="reg-card totale" style="margin-top: auto;">
                     <div class="reg-lbl" style="color: #00ffcc;">SALDO CASSETTO (CONTANTI FISICI)</div>
@@ -513,17 +618,17 @@
         <div class="modal-box modal-grande modal-full" style="flex-direction: column; gap: 5px;">
 
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #4d88ff; padding-bottom: 5px; margin-bottom: 5px;">
-                <div class="modal-titolo" style="margin: 0;">🧾 RICERCA AVANZATA CONTABILITÀ</div>
+                <div class="modal-titolo" style="margin: 0; font-size: 3vh;">📖​ RICERCA AVANZATA CONTABILITÀ</div>
                 <button class="btn-modal btn-grigio" onclick="chiudiModulo('modal-contabilita')" style="padding: 5px 15px;">CHIUDI</button>
             </div>
 
             <div style="display: flex; gap: 10px; margin-bottom: 5px; background: rgba(0,0,0,0.3); padding: 8px 10px; border-radius: 8px; align-items: flex-end;">
                 <div style="flex: 0.5;">
-                    <label class="crm-label" style="font-size: 1.4vh; margin-bottom: 4px;">Mese</label>
+                    <label class="crm-label" style="font-size: 1.6vh; margin-bottom: 4px;">Mese</label>
                     <input type="month" id="cont-mese" class="crm-input" style="height: 38px; box-sizing: border-box; padding: 8px; font-size: 1.8vh; margin: 0;">
                 </div>
                 <div style="flex: 1;">
-                    <label class="crm-label" style="font-size: 1.4vh; margin-bottom: 4px;">Tipo Operazione</label>
+                    <label class="crm-label" style="font-size: 1.6vh; margin-bottom: 4px;">Tipo Operazione</label>
                     <select id="cont-filtro-tipo" class="crm-input" style="height: 38px; box-sizing: border-box; padding: 8px; font-size: 1.8vh; cursor: pointer; margin: 0;">
                         <option value="TUTTI">Tutto lo storico</option>
                         <option value="MULTIPLE">Scontrini: Vendite Multiple</option>
@@ -533,22 +638,22 @@
                     </select>
                 </div>
                 <div style="flex: 1;">
-                    <label class="crm-label" style="font-size: 1.4vh; margin-bottom: 4px;">Cerca Prodotto</label>
+                    <label class="crm-label" style="font-size: 1.6vh; margin-bottom: 4px;">Cerca Prodotto</label>
                     <input type="text" id="cont-cerca-prod" class="crm-input" style="height: 38px; box-sizing: border-box; padding: 8px; font-size: 1.8vh; margin: 0;" placeholder="Es. Olio CBD">
                 </div>
                 <div style="flex: 1;">
-                    <label class="crm-label" style="font-size: 1.4vh; margin-bottom: 4px;">Cerca Cliente (Nome)</label>
+                    <label class="crm-label" style="font-size: 1.6vh; margin-bottom: 4px;">Cerca Cliente (Nome)</label>
                     <input type="text" id="cont-cerca-nome" class="crm-input" style="height: 38px; box-sizing: border-box; padding: 8px; font-size: 1.8vh; margin: 0;" placeholder="Es. Mario">
                 </div>
                 <div style="flex: 1;">
-                    <label class="crm-label" style="font-size: 1.4vh; margin-bottom: 4px;">Cerca Tel / Scheda</label>
+                    <label class="crm-label" style="font-size: 1.6vh; margin-bottom: 4px;">Cerca Tel / Scheda</label>
                     <input type="text" id="cont-cerca-tel" class="crm-input" style="height: 38px; box-sizing: border-box; padding: 8px; font-size: 1.8vh; margin: 0;" placeholder="Es. 333...">
                 </div>
             </div>
 
             <div style="display: flex; flex-direction: column; flex-grow: 1; gap: 0; overflow: hidden;">
 
-                <div class="testata-tabella" style="grid-template-columns: 1.5fr 0.8fr 0.8fr 2fr 1fr 1fr 0.6fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr; background: #002b5e; color: white; font-size: 1.3vh; padding: 8px 5px; margin: 0; border-radius: 4px 4px 0 0;">
+                <div class="testata-tabella" style="grid-template-columns: 1.5fr 0.8fr 0.8fr 2fr 1fr 1fr 0.6fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr; background: #002b5e; color: white; font-size: 1.6vh; padding: 8px 5px; margin: 0; border-radius: 4px 4px 0 0;">
                     <div style="text-align: left !important;">CLIENTE</div>
                     <div style="text-align: center !important;">GIORNO</div>
                     <div style="text-align: center !important;">ORA</div>
@@ -594,9 +699,11 @@
                 </div>
             </div>
 
-            <div style="background: #f0f0f0; padding: 10px; border-radius: 4px; margin-top: 15px; text-align: center; font-size: 1.8vh;">
-                <span style="color: #00cc66; font-weight: bold;" id="det-punti-guadagnati"></span><br>
-                <span style="color: #444;" id="det-saldo-punti"></span>
+            <div id="box-det-punti" style="background: #f0f0f0; padding: 10px; border-radius: 4px; margin-top: 15px; text-align: center; font-size: 1.8vh; display: none;">
+                <div style="color: #cc9c00; font-weight: bold; margin-top: 5px;" id="det-saldo-punti-iniziale"></div>
+                <div style="color: #00cc66; font-weight: bold;" id="det-punti-guadagnati"></div>
+                <div style="color: #ff4d4d; font-weight: bold;" id="det-punti-scaricati"></div>
+                <div style="color: #444; font-weight: bold; margin-top: 5px;" id="det-saldo-punti"></div>
             </div>
 
             <div class="modal-bottoniera" style="margin-top: 20px;">
@@ -648,7 +755,7 @@
     <div class="modal-overlay" id="modal-punti-manuali">
         <div class="modal-box" style="width: 500px; border-color: #ffcc00;">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; margin-bottom: 15px;">
-                <div class="modal-titolo" style="font-size: 2.5vh; margin: 0;" id="mag-titolo-scheda">CARICA PUNTI MANUALMENTE</div>
+                <div class="modal-titolo" style="font-size: 2.5vh; margin: 0;" id="man-titolo-scheda">CARICA PUNTI MANUALMENTE</div>
                 <button class="btn-modal btn-grigio" onclick="chiudiModulo('modal-punti-manuali')" style="padding: 5px 15px;">CHIUDI</button>
             </div>
 
@@ -660,12 +767,18 @@
                 </div>
             </div>
 
-            <div id="man-info-box" class="box-info-fidelity">
-                <div class="info-label">Cliente Selezionato:</div>
-                <div class="info-value" id="man-info-nome">-</div>
-                <div style="display: flex; justify-content: space-between;">
-                    <div><div class="info-label">Punti Attuali</div><div class="info-value"><span id="man-info-punti">0</span></div></div>
-                    <div><div class="info-label">Bonus</div><div class="info-value"><span id="man-info-bonus">€ 0,00</span></div></div>
+            <div id="man-info-box" style="display: none; background: rgba(0, 255, 204, 0.1); border: 1px solid #00ffcc; padding: 10px; border-radius: 4px; margin-bottom: 15px; text-align: left;">
+                <div style="font-size: 1.4vh; color: #b3d9ff; margin-bottom: 5px;">CLIENTE TROVATO:</div>
+                <div id="man-info-nome" style="font-size: 2.2vh; font-weight: bold; color: white;"></div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+                    <div>
+                        <div style="font-size: 1.6vh;">Punti: <span id="man-info-punti" style="color: #00ffcc; font-weight: bold; font-size: 2vh;">0</span></div>
+                        <div style="font-size: 1.6vh;">Bonus: <span id="man-info-bonus" style="color: #ffcc00; font-weight: bold; font-size: 2vh;">€ 0</span></div>
+                    </div>
+                    <!-- Nuovo pulsante Invio Saldo -->
+                    <button class="btn-modal" onclick="inviaSaldoPuntiManuale()" style="background: #25D366; border: none; padding: 8px 15px; font-size: 1.4vh; margin: 0; color: black; border-radius: 4px; font-weight: bold; cursor: pointer;">
+                        💬 INVIA SALDO
+                    </button>
                 </div>
             </div>
 
@@ -697,14 +810,18 @@
         <div class="modal-box modal-grande modal-full">
 
             <div class="crm-left" style="flex: 2; display: flex; flex-direction: column;">
-                <div class="modal-titolo" id="titolo-mese-calendario" style="font-size: 2.5vh; text-align: left;">📅 GIORNALE DI CASSA</div>
+                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 15px; margin-bottom: 20px;">
+                    <button class="btn-modal btn-blu" onclick="cambiaMeseCalendario(-1)" style="padding: 5px 15px; margin: 0; font-size: 1.5vh;">◀ PRECEDENTE</button>
+                    <div class="modal-titolo" id="titolo-mese-calendario" style="margin: 0; font-size: 2.5vh; color: #00ffcc; letter-spacing: 1px;">📅 GIORNALE</div>
+                    <button class="btn-modal btn-blu" onclick="cambiaMeseCalendario(1)" style="padding: 5px 15px; margin: 0; font-size: 1.5vh;">SUCCESSIVO ▶</button>
+                </div>
                 <div class="testata-tabella" style="grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1.2fr; margin-bottom: 5px;">
                     <div>DATA</div><div>CONTANTI</div><div>POS</div><div>DISTR.</div><div>USCITE</div><div>TOT. NETTO</div>
                 </div>
 
                 <div class="area-dati-tabella" style="background: rgba(0,0,0,0.3); border-radius: 4px; display: flex; flex-direction: column; overflow-y: auto; position: relative;">
                     <div id="calendario-lista"></div>
-                    <div id="calendario-totali-colonne" class="riga-prodotto" style="grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1.2fr; background: rgba(0, 204, 102, 0.2); font-weight: bold; position: sticky; bottom: 0; border-top: 2px solid #00cc66;">
+                    <div id="calendario-totali-colonne" class="riga-prodotto" style="grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr 1.2fr; background: #013220; font-weight: bold; position: sticky; bottom: 0; border-top: 2px solid #00cc66; ">
                     </div>
                 </div>
             </div>
@@ -712,7 +829,7 @@
             <div class="crm-right" style="flex: 1; background: rgba(0, 18, 41, 0.8);">
                 <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; margin-bottom: 15px;">
                     <div class="modal-titolo" style="font-size: 2.5vh; margin: 0;">📈 REPORT MENSILE</div>
-                    <button class="btn-modal btn-grigio" onclick="chiudiModulo('modal-calendario')" style="padding: 5px 15px;">CHIUDI</button>
+                    <button class="btn-modal btn-grigio" onclick="chiudiModulo('modal-calendario'); apriModale('modal-menu-principale');" style="padding: 5px 15px; margin: 0;">CHIUDI</button>
                 </div>
 
                 <div class="reg-card totale" style="margin-bottom: 20px;">
@@ -736,9 +853,6 @@
                     <div style="font-size: 1.6vh; color: #b3d9ff; margin-top: 5px; text-transform: uppercase;" id="cal-best-date">-</div>
                 </div>
 
-                <div class="modal-bottoniera" style="margin-top: auto;">
-                    <button class="btn-modal btn-grigio" onclick="chiudiModulo('modal-calendario')" style="width: 100%;">CHIUDI</button>
-                </div>
             </div>
         </div>
     </div>
@@ -747,7 +861,7 @@
         <div class="modal-box" style="width: 100vw; height: 100vh; max-width: 100%; border-radius: 0; border: none; display: flex; flex-direction: column; background: #001229; padding: 15px; box-sizing: border-box;">
 
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #4d88ff; padding-bottom: 10px; margin-bottom: 10px; flex-shrink: 0;">
-                <div class="modal-titolo" style="margin: 0; font-size: 3vh;">📈 BUSINESS INTELLIGENCE E STATISTICHE</div>
+                <div class="modal-titolo" style="margin: 0; font-size: 3vh;">📈 ANALISI E STATISTICHE CLIENTI</div>
                 <div style="display: flex; gap: 15px;">
                     <button class="btn-modal btn-blu" onclick="apriModale('modal-top-prodotti')">🏆 TOP PRODOTTI</button>
                     <button class="btn-modal btn-grigio" onclick="chiudiModulo('modal-statistiche')">CHIUDI</button>
@@ -798,7 +912,7 @@
                             <div class="reg-lbl" style="color: #ff6666; font-size: 1.8vh; margin-bottom: 2px;">Totale Bonus Riscattati</div>
                             <div class="reg-val" style="font-size: 2.7vh; line-height: 1.1;">
                                 <div id="stat-det-tot-bonus" style="color: #ff6666; font-weight: bold;">€ 0,00</div>
-                                <div style="font-size: 1.8vh; color: #fff; margin-top: 3px;">Ultimo: <span id="stat-det-ultimo-bonus" style="font-weight: normal; color: #ffcc00;">-</span></div>
+                                <div style="font-size: 1.7vh; color: #fff; margin-top: 3px;">Ultimo: <span id="stat-det-ultimo-bonus" style="font-weight: normal; color: #ffcc00;">-</span></div>
                             </div>
                         </div>
                     </div>
@@ -807,18 +921,15 @@
 
                         <div style="overflow: auto; flex-grow: 1; padding-bottom: 15px;">
                             <div style="min-width: 1500px;">
-                                <div class="testata-tabella" style="grid-template-columns: 0.6fr 0.8fr 0.8fr 2.5fr 1fr 1fr 0.6fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr; background: #002b5e; color: #ffffff; font-size: 1.4vh; position: sticky; top: 0; padding: 8px 5px; z-index: 10;">
+                                <div class="testata-tabella" style="grid-template-columns: 0.6fr 0.8fr 0.8fr 2.5fr 1fr 1fr 0.6fr 1fr 1fr 1fr 1fr 1fr 1fr 1fr; background: #002b5e; color: #ffffff; font-size: 1.6vh; position: sticky; top: 0; padding: 8px 5px; z-index: 10;">
                                     <div>MESE</div><div>GIORNO</div><div>ORA</div><div style="text-align:left;">DESCRIZIONE</div><div>CATEG.</div>
-                                    <div>IMPORTO</div><div>Q.TÀ</div><div>CONTANTI</div><div>POS</div><div>BONUS</div>
-                                    <div>S. INIZ.</div><div>P. CARIC.</div><div>P. SCARIC.</div><div>S. FIN.</div>
+                                    <div>IMPORTO</div><div>Q.TÀ</div><div>CONTANTI</div><div>POS</div>
+                                    <div>S. INIZ.</div><div>P. CARIC.</div><div>P. SCARIC.</div><div>BONUS</div><div>S. FIN.</div>
                                 </div>
-
                                 <div id="stat-tabella-acquisti"></div>
-
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
@@ -861,8 +972,10 @@
                 <button class="btn-modal btn-verde" onclick="chiudiModale('modal-impostazioni-menu'); apriModale('modal-impostazioni-stampa')">🖨️ DATI SCONTRINO (STAMPA)</button>
                 <button class="btn-modal btn-verde" onclick="chiudiModale('modal-impostazioni-menu'); apriModale('modal-impostazioni-importazione')">📊 IMPORTAZIONE DATI EXCEL (CSV)</button>
                 <button class="btn-modal" style="background-color: #25D366; color: white;" onclick="apriImpostazioniWhatsApp()">💬 TEMPLATE WHATSAPP GLOBALE</button>
-
                 <button class="btn-modal" style="background-color: #ff9900; color: white;" onclick="apriGestioneSogliePunti()">⭐ GESTISCI SOGLIE PUNTI</button>
+                <button class="btn-menu" onclick="apriGestioneOperatori()" style="background-color: rgba(0, 204, 102, 0.2); border: 1px solid #00cc66; color: #00ffcc; padding: 15px; font-size: 2vh; border-radius: 8px; margin-bottom: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%;">
+                    👥 GESTIONE OPERATORI E PERMESSI
+                </button>
             </div>
 
             <div class="modal-bottoniera">
@@ -872,18 +985,24 @@
     </div>
 
     <div class="modal-overlay overlay-primo-piano" id="modal-impostazioni-sistema" style="z-index: 2010;">
-        <div class="modal-box" style="width: 400px; border-color: #4d88ff;">
-            <div class="modal-titolo" style="color: #4d88ff;">🖥️ IMPOSTAZIONI SISTEMA</div>
+        <div class="modal-box" style="width: 450px; border-color: #4d88ff;">
+            <div class="modal-titolo" style="color: #4d88ff; margin-bottom: 20px;">🖥️ IMPOSTAZIONI SISTEMA</div>
 
-            <div class="crm-form-group" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 4px;">
-                <label class="crm-label" style="margin: 0; font-size: 1.8vh;">Richiedi PIN all'avvio</label>
-                <input type="checkbox" id="impostazioni-pin-toggle" style="transform: scale(1.5);">
-            </div>
-            <p style="font-size: 1.4vh; color: #8888bb; text-align: center; margin-bottom: 20px;">Nota: Il PIN di default è impostato su 12345 dal sistema.</p>
+            <input type="hidden" id="impostazioni-pin-toggle" checked>
 
             <div class="crm-form-group" style="margin-bottom: 15px; background: rgba(0,0,0,0.3); padding: 10px; border-radius: 4px; border: 1px solid #ffcc00;">
                 <label class="crm-label" style="color: #ffcc00; margin-bottom: 5px;">Link Database Firebase (URL)</label>
                 <input type="text" id="impostazioni-firebase-url" class="crm-input" placeholder="Es: https://tuo-progetto.firebaseio.com">
+            </div>
+
+            <!-- NUOVO BLOCCO SUMUP -->
+            <div class="crm-form-group" style="margin-bottom: 15px; background: rgba(0, 153, 255, 0.1); padding: 10px; border-radius: 4px; border: 1px solid #0099ff;">
+                <div style="color: #0099ff; font-weight: bold; margin-bottom: 10px; font-size: 1.6vh;">💳 CREDENZIALI SUMUP (PAGAMENTI POS)</div>
+                <label class="crm-label" style="color: #b3d9ff; margin-bottom: 5px; font-size: 1.3vh;">Client ID</label>
+                <input type="text" id="impostazioni-sumup-id" class="crm-input" placeholder="Incolla qui il Client ID" style="margin-bottom: 10px; font-size: 1.4vh;">
+
+                <label class="crm-label" style="color: #b3d9ff; margin-bottom: 5px; font-size: 1.3vh;">Client Secret</label>
+                <input type="password" id="impostazioni-sumup-secret" class="crm-input" placeholder="Incolla qui il Client Secret" style="font-size: 1.4vh;">
             </div>
 
             <div class="modal-bottoniera">
@@ -1016,12 +1135,13 @@
         </div>
     </div>
 
-    <div class="modal-overlay" id="modal-menu-principale" style="display: flex; background: linear-gradient(135deg, #001229 0%, #002b5e 100%);">
+    <div class="modal-overlay" id="modal-menu-principale" style="display: flex; background: linear-gradient(135deg, #001229 0%, #002b5e 100%); z-index: 50;">
         <div class="menu-container">
-            <div class="menu-header">
-                <img src="icone/NegozioGestWeb512.png" class="menu-logo" onerror="this.insertAdjacentText('afterend', '🏧')">
-                <h1 id="menu-titolo-app">CASSA GESTIONALE PWA</h1>
-                <p style="color: #b3d9ff; font-size: 2vh;">Seleziona un'operazione per iniziare</p>
+            <div class="menu-header-luxury">
+                <img src="icone\logomenu512.png" class="menu-logo-luxury" onerror="this.insertAdjacentText('afterend', '✨')">
+
+                <h1 id="menu-titolo-app">ESSENZIALE</h1>
+                <div class="menu-sottotitolo-luxury">Parfum & Boutique</div>
             </div>
 
             <div class="menu-grid">
@@ -1033,7 +1153,7 @@
                     <div class="menu-icon"><img src="icone/clienti.png" onerror="this.insertAdjacentText('afterend', '👥')"></div>
                     <div class="menu-label">RUBRICA CLIENTI</div>
                 </div>
-                <div class="menu-tile" onclick="avviaFunzione('CALENDARIO')">
+                <div class="menu-tile" onclick="chiudiModale('modal-menu-principale'); apriModale('modal-calendario')">
                     <div class="menu-icon"><img src="icone/calendario.png" onerror="this.insertAdjacentText('afterend', '📅')"></div>
                     <div class="menu-label">GIORNALE MENSILE</div>
                 </div>
@@ -1045,17 +1165,21 @@
                     <div class="menu-icon"><img src="icone/preferiti.png" onerror="this.insertAdjacentText('afterend', '⭐')"></div>
                     <div class="menu-label">CARICO PUNTI</div>
                 </div>
-                <div class="menu-tile" onclick="avviaFunzione('MAGAZZINO')">
+                <div class="menu-tile" onclick="chiudiModale('modal-menu-principale'); apriModale('modal-magazzino')">
                     <div class="menu-icon"><img src="icone/magazino.png" onerror="this.insertAdjacentText('afterend', '📦')"></div>
                     <div class="menu-label">MAGAZZINO</div>
                 </div>
                 <div class="menu-tile" onclick="avviaFunzione('STATISTICHE')">
-                    <div class="menu-icon"><img src="icone/statistiche.png" onerror="this.style.display='none'; this.insertAdjacentText('afterend', '📊');"></div>
-                    <div class="menu-label">STATISTICHE</div>
+                    <div class="menu-icon"><img src="icone/businessintelliggente.png" onerror="this.style.display='none'; this.insertAdjacentText('afterend', '📊');"></div>
+                    <div class="menu-label">BUSINESS INTELLIGENCE</div>
                 </div>
                 <div class="menu-tile" onclick="apriModaleOrdini()">
                     <div class="menu-icon"><img src="icone/ordini.png" onerror="this.insertAdjacentText('afterend', '📦')"></div>
                     <div class="menu-label">ORDINI FORNITORI</div>
+                </div>
+                <div class="menu-tile" onclick="apriGestioneGiftCard()">
+                    <div class="menu-icon"><img src="icone/giftcard2.png" onerror="this.insertAdjacentText('afterend', '💳')"></div>
+                    <div class="menu-label">GESTIONE GIFT CARD</div>
                 </div>
                 <div class="menu-tile" onclick="avviaFunzione('SETUP')">
                     <div class="menu-icon"><img src="icone/impostazioni.png" onerror="this.insertAdjacentText('afterend', '⚙️')"></div>
@@ -1065,92 +1189,93 @@
                     <div class="menu-icon"><img src="icone/refresh.png" onerror="this.insertAdjacentText('afterend', '🔄')"></div>
                     <div class="menu-label">RELOAD APP</div>
                 </div>
-                <div class="menu-tile" onclick="apriModaleChiusuraCassa()">
-                    <div class="menu-icon"><img src="icone/chiusura.png" onerror="this.insertAdjacentText('afterend', '🔒')"></div>
-                    <div class="menu-label">CHIUSURA DI CASSA (Z)</div>
-                </div>
-                <div class="menu-tile" onclick="apriGestioneGiftCard()">
-                    <div class="menu-icon"><img src="icone/giftcard2.png" onerror="this.insertAdjacentText('afterend', '💳')"></div>
-                    <div class="menu-label">GESTIONE GIFT CARD</div>
-                </div>
-                <div class="menu-tile" style="border-color: #ff4d4d;" onclick="bloccaCassa()">
-                    <div class="menu-icon" style="filter: drop-shadow(0 0 10px #ff4d4d);">🔒</div>
-                    <div class="menu-label" style="color: #ff4d4d;">BLOCCA CASSA</div>
+                <div class="menu-tile" onclick="window.open('manuale-operativo.html', '_blank')">
+                    <div class="menu-icon"><img src="icone/manuale2.png" onerror="this.insertAdjacentText('afterend', '📖')"></div>
+                    <div class="menu-label">MANUALE OPERATIVO</div>
                 </div>
             </div>
-
             <div class="menu-footer">
                 Versione 1.0.3 - Database Online: <span id="menu-status-web">Verifica...</span>
             </div>
         </div>
     </div>
 
-    <div class="modal-overlay overlay-primo-piano" id="modal-operatore" style="z-index: 1400;">
-        <div class="modal-box" style="width: 400px; border-color: #00cc66;">
-            <div class="modal-titolo" style="color: #00cc66;">👤 SELEZIONA OPERATORE</div>
-            <div id="lista-bottoni-operatori" style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; max-height: 300px; overflow-y: auto;">
-            </div>
-            <div style="border-top: 1px solid rgba(255,255,255,0.2); padding-top: 15px; text-align: left;">
-                <label class="crm-label" style="color: #b3d9ff; font-size: 1.4vh;">Aggiungi un nuovo dipendente:</label>
-                <input type="text" id="nuovo-nome-operatore" class="crm-input" placeholder="Nome operatore..." style="margin-bottom: 10px; font-size: 1.8vh;">
-                <button class="btn-modal btn-verde" style="width: 100%;" onclick="aggiungiOperatore()">➕ SALVA E ATTIVA</button>
-            </div>
-            <div class="modal-bottoniera" style="margin-top: 20px;">
-                <button class="btn-modal btn-grigio" style="width: 100%;" onclick="chiudiModale('modal-operatore')">ANNULLA</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal-overlay overlay-primo-piano" id="modal-dashboard-vendite" style="z-index: 1200;">
-        <div class="modal-box modal-grande modal-full" style="display: flex; flex-direction: column;">
-
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ffcc00; padding-bottom: 10px; margin-bottom: 15px; flex-shrink: 0;">
-                <div class="modal-titolo" style="color: #ffcc00; margin: 0; text-align: left; font-size: 3vh;">📊 DASHBOARD STATISTICHE VENDITE</div>
-                <div>
-                    <select id="stat-periodo" class="crm-input" style="width: auto; padding: 1vh 1vw; font-size: 2vh; background: #001a3a; color: #fff; border-color: #ffcc00;" onchange="calcolaStatistiche()">
-                        <option value="oggi">Oggi</option>
-                        <option value="ieri">Ieri</option>
-                        <option value="settimana">Ultimi 7 Giorni</option>
-                        <option value="mese">Questo Mese</option>
-                        <option value="tutto">Tutto lo storico</option>
+    <!-- 📊 DASHBOARD BUSINESS INTELLIGENCE -->
+    <div class="modal-overlay" id="modal-dashboard-vendite" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 2000; background: rgba(0,0,0,0.85);">
+        <div class="modal-box" style="width: 100%; height: 100%; max-width: 100%; max-height: 100%; border: none; border-radius: 0; margin: 0; background: #001229; display: flex; flex-direction: column; box-sizing: border-box; padding: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0, 255, 204, 0.3); padding-bottom: 15px; margin-bottom: 15px;">
+                <div class="modal-titolo" style="color: #00ffcc; font-size: 3vh; margin: 0; display: flex; align-items: center; gap: 10px;">
+                    📈 BUSINESS INTELLIGENCE
+                    <select id="stat-bi-periodo" class="crm-input" style="width: auto; padding: 5px; font-size: 2vh;" onchange="calcolaStatistiche()">
+                        <option value="mese_corrente">Questo Mese</option>
+                        <option value="mese_scorso">Mese Scorso</option>
+                        <option value="anno_corrente">Quest'Anno</option>
+                        <option value="tutto">Tutto lo Storico</option>
                     </select>
                 </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-modal btn-verde" onclick="esportaDashboardCSV()" style="padding: 5px 15px; margin: 0; font-size: 2vh;">📊 EXCEL</button>
+                    <button class="btn-modal btn-blu" onclick="stampaDashboardPDF()" style="padding: 5px 15px; margin: 0; font-size: 2vh;">🖨️ PDF</button>
+                    <button class="btn-modal btn-rosso" onclick="chiudiModulo('modal-dashboard-vendite')" style="padding: 5px 15px; margin: 0; font-size: 2vh;">CHIUDI</button>
+                </div>
             </div>
 
-            <div style="display: flex; gap: 2vw; flex-grow: 1; overflow: hidden;">
-                <div class="crm-left" style="flex: 1; border-color: #ffcc00; overflow-y: auto;">
-                    <div style="font-size: 1.8vh; color: #ffeb99; margin-bottom: 15px; font-weight: bold; text-align: center;">METRICHE GLOBALI</div>
+            <!-- Area Scrollabile -->
+            <div id="area-stampa-bi" style="flex: 1; display: flex; flex-direction: column; gap: 20px; overflow-y: auto; padding-right: 10px; padding-bottom: 15px;">
 
-                    <div class="crm-stats" style="flex-direction: column; gap: 15px; margin-bottom: 30px; border-color: rgba(255,204,0,0.5);">
-                        <div class="crm-stat-box" style="background: rgba(255,204,0,0.1); padding: 15px; border-radius: 8px;">
-                            <div class="crm-stat-lbl" style="color: #ffcc00;">Incasso Totale</div>
-                            <div class="crm-stat-val" id="stat-tot-incasso" style="font-size: 5vh;">€ 0,00</div>
-                        </div>
-                        <div style="display: flex; gap: 15px;">
-                            <div class="crm-stat-box" style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
-                                <div class="crm-stat-lbl">Scontrini Emessi</div>
-                                <div class="crm-stat-val" id="stat-tot-scontrini" style="font-size: 3.5vh; color: #fff;">0</div>
-                            </div>
-                            <div class="crm-stat-box" style="background: rgba(255,255,255,0.05); padding: 10px; border-radius: 8px;">
-                                <div class="crm-stat-lbl">Spesa Media</div>
-                                <div class="crm-stat-val" id="stat-media-scontrino" style="font-size: 3.5vh; color: #fff;">€ 0,00</div>
-                            </div>
-                        </div>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; flex-shrink: 0;">
+                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border-left: 4px solid #00ffcc;">
+                        <div style="color: #b3d9ff; font-size: 1.6vh;">Fatturato Periodo</div>
+                        <div id="bi-fatturato" style="color: white; font-size: 3vh; font-weight: bold;">€ 0,00</div>
+                        <div id="bi-trend-fatturato" style="font-size: 1.5vh; margin-top: 5px;">vs Anno Prec: -</div>
                     </div>
-
-                    <div style="font-size: 1.8vh; color: #ffeb99; margin-bottom: 15px; font-weight: bold; text-align: center;">INCASSI PER OPERATORE</div>
-                    <div id="stat-lista-operatori" style="display: flex; flex-direction: column; gap: 10px;">
+                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border-left: 4px solid #ffcc00;">
+                        <div style="color: #b3d9ff; font-size: 1.6vh;">Scontrino Medio</div>
+                        <div id="bi-scontrino-medio" style="color: white; font-size: 3vh; font-weight: bold;">€ 0,00</div>
+                        <div id="bi-tot-scontrini" style="color: #888; font-size: 1.5vh; margin-top: 5px;">0 transazioni</div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border-left: 4px solid #ff4d4d;">
+                        <div style="color: #b3d9ff; font-size: 1.6vh;">Margine Lordo Reale</div>
+                        <div id="bi-margine" style="color: white; font-size: 3vh; font-weight: bold;">0,00%</div>
+                        <div style="color: #888; font-size: 1.5vh; margin-top: 5px;">Al netto di IVA e Costi</div>
+                    </div>
+                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border-left: 4px solid #4d88ff;">
+                        <div style="color: #b3d9ff; font-size: 1.6vh;">Valore Magazzino</div>
+                        <div id="bi-valore-magazzino" style="color: white; font-size: 3vh; font-weight: bold;">€ 0,00</div>
+                        <div id="bi-rotazione-stock" style="color: #888; font-size: 1.5vh; margin-top: 5px;">Rotazione: -</div>
                     </div>
                 </div>
 
-                <div class="crm-right" style="flex: 2; border-color: #ffcc00; display: flex; flex-direction: column;">
-                    <div style="font-size: 1.8vh; color: #ffeb99; margin-bottom: 15px; font-weight: bold; text-align: center;">CLASSIFICA PRODOTTI PIÙ VENDUTI (TOP 50)</div>
+                <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px; flex: 1.5; min-height: 0;">
+                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; display: flex; flex-direction: column; min-height: 0;">
+                        <div style="color: #00ffcc; font-size: 1.7vh; margin-bottom: 10px; font-weight: bold; flex-shrink: 0;">📈 Andamento Fatturato</div>
+                        <div style="position: relative; flex-grow: 1; min-height: 0;"><canvas id="chart-andamento"></canvas></div>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; display: flex; flex-direction: column; min-height: 0;">
+                        <div style="color: #00ffcc; font-size: 1.7vh; margin-bottom: 10px; font-weight: bold; flex-shrink: 0;">🍩 Vendite per Categoria</div>
+                        <div style="position: relative; flex-grow: 1; min-height: 0;"><canvas id="chart-categorie"></canvas></div>
+                    </div>
+                </div>
 
-                    <div id="stat-lista-prodotti" class="crm-list" style="flex-grow: 1; border-color: rgba(255,204,0,0.2);">
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; flex: 1; min-height: 0;">
+                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; display: flex; flex-direction: column; min-height: 0;">
+                        <div style="color: #00ffcc; font-size: 1.8vh; margin-bottom: 10px; font-weight: bold; flex-shrink: 0;">🏆 Top 5 Prodotti & Brand</div>
+                        <div id="bi-top-prodotti" style="font-size: 1.5vh; flex-grow: 1; overflow-y: auto;"></div>
                     </div>
 
-                    <div class="modal-bottoniera" style="margin-top: 2vh; flex-shrink: 0;">
-                        <button class="btn-modal btn-grigio" style="width: 100%;" onclick="chiudiModulo('modal-dashboard-vendite')">CHIUDI SCHERMATA</button>
+                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; display: flex; flex-direction: column; min-height: 0;">
+                        <div style="color: #ff4d4d; font-size: 1.8vh; margin-bottom: 10px; font-weight: bold; flex-shrink: 0;">💀 Dead Stock (Fermi da >6 Mesi)</div>
+                        <div id="bi-dead-stock" style="font-size: 1.5vh; flex-grow: 1; overflow-y: auto; padding-right: 5px;"></div>
+                    </div>
+
+                    <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; display: flex; flex-direction: column; min-height: 0;">
+                        <div style="color: #ffcc00; font-size: 1.8vh; margin-bottom: 10px; font-weight: bold; flex-shrink: 0;">⭐ Analisi Fidelity</div>
+                        <div style="display: flex; justify-content: space-between; border-bottom: 1px solid #444; padding-bottom: 5px; margin-bottom: 10px; flex-shrink: 0;">
+                            <span style="color:#b3d9ff; font-size: 1.6vh;">Tasso di Ritorno:</span>
+                            <span id="bi-tasso-ritorno" style="color: white; font-weight: bold;">0%</span>
+                        </div>
+                        <div style="color: #ffcc00; font-size: 1.8vh; margin-bottom: 5px; flex-shrink: 0;">💤 Clienti Dormienti (>3 Mesi):</div>
+                        <div id="bi-clienti-dormienti" style="font-size: 1.5vh; flex-grow: 1; overflow-y: auto; padding-right: 5px;"></div>
                     </div>
                 </div>
             </div>
@@ -1260,47 +1385,36 @@
         </div>
     </div>
 
-    <div class="modal-overlay overlay-primo-piano" id="modal-avviso" style="z-index: 9999;">
+    <div class="modal-overlay overlay-primo-piano" id="modal-avviso" style="z-index: 10005 !important;">
         <div class="modal-box" style="width: 400px; border-color: #ffcc00;">
             <div class="modal-titolo" style="color: #ffcc00;">⚠️ ATTENZIONE</div>
             <p id="msg-avviso" style="font-size: 2.2vh; margin-bottom: 25px; line-height: 1.4;"></p>
-            <div class="modal-bottoniera"><button class="btn-modal btn-grigio" onclick="chiudiModale('modal-avviso')">OK, HO CAPITO</button></div>
+            <div class="modal-bottoniera">
+                <button class="btn-modal btn-grigio" onclick="chiudiModaleAvviso()">OK, HO CAPITO</button>
+            </div>
         </div>
     </div>
 
-    <div class="modal-overlay" id="modal-stampa-etichette" style="z-index: 9500; display: none;">
-        <div class="modal-box" style="width: 800px; max-width: 95vw; height: 80vh; display: flex; flex-direction: column;">
-            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; margin-bottom: 15px;">
-                <div class="modal-titolo" style="font-size: 2.5vh; margin: 0;">🖨️ MOTORE DI STAMPA ETICHETTE</div>
-                <button class="btn-modal btn-grigio" onclick="chiudiModale('modal-stampa-etichette')" style="padding: 5px 15px;">CHIUDI</button>
-            </div>
+    <div class="modal-overlay overlay-primo-piano" id="modal-sblocco-cassa" style="display: flex; z-index: 9999; background: linear-gradient(135deg, #001229 0%, #002b5e 100%); z-index: 50 !important; " onclick="document.getElementById('input-pin-sblocco').focus()">
+        <div class="modal-box" style="width: 400px; border-color: #bf953f; text-align: center;" onclick="event.stopPropagation(); document.getElementById('input-pin-sblocco').focus();">
+            <div style="font-size: 5vh; margin-bottom: 15px;">🔒</div>
+            <div class="modal-titolo" style="color: #fcf6ba; text-shadow: 0 0 10px rgba(252, 246, 186, 0.5); font-family: 'Cinzel', serif; font-size: 3.5vh; margin-bottom: 5px;">SISTEMA BLOCCATO</div>
+            <p style="color: #888; font-size: 1.5vh; margin-bottom: 25px;">Inserisci il tuo PIN personale per accedere</p>
 
-            <div style="display: flex; gap: 20px; flex-grow: 1; overflow: hidden;">
-                <div style="flex: 1; display: flex; flex-direction: column; gap: 15px;">
-                    <div class="crm-form-group" style="margin: 0;">
-                        <label class="crm-label">Layout Etichetta</label>
-                        <select id="stampa-layout" class="crm-input" onchange="aggiornaAnteprimaStampa()">
-                            <option value="standard">Standard (Profumi - 50x30mm)</option>
-                            <option value="promo">Promo (Prezzo Barrato - 50x30mm)</option>
-                            <option value="small">Small (Gioielleria/Make-up - 30x15mm)</option>
-                        </select>
-                    </div>
+            <input type="password" id="input-pin-sblocco" class="crm-input" style="text-align: center; font-size: 4vh; letter-spacing: 15px; font-weight: bold; width: 80%; margin: 0 auto 20px auto;" placeholder="****" maxlength="4" onkeyup="if(this.value.length === 4) sbloccaCassaConPin(this.value)">
 
-                    <div style="background: rgba(0,0,0,0.4); border-radius: 6px; padding: 10px; flex-grow: 1; overflow-y: auto;">
-                        <div class="crm-label" style="margin-bottom: 10px;">Articoli in Coda:</div>
-                        <div id="lista-coda-stampa"></div>
-                    </div>
-                </div>
-
-                <div style="flex: 1; background: #fff; border-radius: 6px; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;">
-                    <span style="position: absolute; top: 10px; left: 10px; color: #888; font-size: 1.2vh; font-weight: bold;">LIVE PREVIEW</span>
-                    <div id="anteprima-etichetta-container" style="box-shadow: 0 0 10px rgba(0,0,0,0.2); display: flex; justify-content: center; align-items: center; background: #e0e0e0; min-height: 200px; min-width: 300px;"></div>
-                </div>
-            </div>
-
-            <div class="modal-bottoniera" style="margin-top: 15px;">
-                <button class="btn-modal btn-rosso" onclick="svuotaCodaStampa()" style="flex: 1;">SVUOTA CODA</button>
-                <button class="btn-modal btn-verde" onclick="eseguiStampaEtichette()" style="flex: 2;">🖨️ AVVIA STAMPA</button>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; width: 80%; margin: 0 auto;">
+                <button class="btn-modal btn-grigio" onclick="event.stopPropagation(); digitaPinSblocco('1');">1</button>
+                <button class="btn-modal btn-grigio" onclick="event.stopPropagation(); digitaPinSblocco('2');">2</button>
+                <button class="btn-modal btn-grigio" onclick="event.stopPropagation(); digitaPinSblocco('3');">3</button>
+                <button class="btn-modal btn-grigio" onclick="event.stopPropagation(); digitaPinSblocco('4');">4</button>
+                <button class="btn-modal btn-grigio" onclick="event.stopPropagation(); digitaPinSblocco('5');">5</button>
+                <button class="btn-modal btn-grigio" onclick="event.stopPropagation(); digitaPinSblocco('6');">6</button>
+                <button class="btn-modal btn-grigio" onclick="event.stopPropagation(); digitaPinSblocco('7');">7</button>
+                <button class="btn-modal btn-grigio" onclick="event.stopPropagation(); digitaPinSblocco('8');">8</button>
+                <button class="btn-modal btn-grigio" onclick="event.stopPropagation(); digitaPinSblocco('9');">9</button>
+                <button class="btn-modal btn-rosso" onclick="event.stopPropagation(); digitaPinSblocco('C');">C</button>
+                <button class="btn-modal btn-grigio" onclick="event.stopPropagation(); digitaPinSblocco('0');">0</button>
             </div>
         </div>
     </div>
@@ -1320,8 +1434,8 @@
             <div style="display: flex; gap: 15px; margin-bottom: 15px;">
                 <div class="crm-form-group" style="flex: 1; margin-bottom: 0;">
                     <label class="crm-label" style="color: #ffcc00;">Prezzo Pagato Originale (€)</label>
-                    <input type="text" id="reso-prezzo" class="crm-input" placeholder="0,00" inputmode="decimal" style="text-align: center; color: #ffcc00; font-weight: bold;">
-                    <span style="font-size: 1.1vh; color: #888;">Controlla lo scontrino per evitare rimborsi di merce in promo.</span>
+                    <input type="text" id="reso-prezzo" class="crm-input" placeholder="0,00" inputmode="decimal" style="text-align: center; color: black; font-weight: bold;">
+                    <span style="font-size: 1.4vh; color: #888;">Controlla lo scontrino per evitare rimborsi di merce in promo.</span>
                 </div>
                 <div class="crm-form-group" style="flex: 1; margin-bottom: 0;">
                     <label class="crm-label">ID Scontrino (Opzionale)</label>
@@ -1357,7 +1471,7 @@
     <div class="modal-overlay" id="modal-gestione-ordini" style="display: none; z-index: 9400;">
         <div class="modal-box" style="width: 100vw; max-width: 100vw; height: 100vh; max-height: 100vh; margin: 0; border-radius: 0; border: none; display: flex; flex-direction: column; box-sizing: border-box;">
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; margin-bottom: 15px;">
-                <div class="modal-titolo" style="font-size: 2.5vh; margin: 0; color: #4d88ff;">📦 GESTIONE ORDINI E CICLO PASSIVO</div>
+                <div class="modal-titolo" style="font-size: 3.0vh; margin: 0;">📦 GESTIONE ORDINI E CICLO PASSIVO</div>
                 <button class="btn-modal btn-grigio" onclick="chiudiModale('modal-gestione-ordini')" style="padding: 5px 15px;">CHIUDI</button>
             </div>
 
@@ -1381,12 +1495,12 @@
                 <table style="width: 100%; border-collapse: collapse; color: white; font-size: 1.6vh;" id="tabella-lista-ordini">
                     <thead>
                         <tr style="border-bottom: 2px solid #4d88ff; text-align: left;">
-                            <th style="padding: 10px;">ID Ordine</th>
-                            <th style="padding: 10px;">Data</th>
-                            <th style="padding: 10px;">Fornitore</th>
-                            <th style="padding: 10px;">Importo Stimato</th>
-                            <th style="padding: 10px;">Stato</th>
-                            <th style="padding: 10px; text-align: right;">Azioni</th>
+                            <th style="text-align: left; padding: 10px;">ID Ordine</th>
+                            <th style="text-align: left; padding: 10px;">Data</th>
+                            <th style="text-align: left; padding: 10px;">Fornitore</th>
+                            <th style="text-align: center; padding: 10px; ">Importo Stimato</th>
+                            <th style="text-align: center; padding: 10px; ">Stato</th>
+                            <th style="text-align: center; padding: 10px; ">Azioni</th>
                         </tr>
                     </thead>
                     <tbody id="body-lista-ordini">
@@ -1407,7 +1521,7 @@
             <div style="display: flex; gap: 15px; margin-bottom: 15px;">
                 <div class="crm-form-group" style="flex: 1; margin-bottom: 0;">
                     <label class="crm-label">Fornitore / Brand</label>
-                    <input type="text" id="ord-fornitore" class="crm-input" style="color: #b3d9ff; font-weight: bold; text-transform: uppercase;">
+                    <input type="text" id="ord-fornitore" class="crm-input" style="font-weight: bold; text-transform: uppercase;">
                 </div>
                 <div class="crm-form-group" style="flex: 0.5; margin-bottom: 0;">
                     <label class="crm-label">Stato Ordine</label>
@@ -1433,11 +1547,11 @@
                 <table style="width: 100%; border-collapse: collapse; color: white; font-size: 1.6vh;">
                     <thead>
                         <tr style="border-bottom: 2px solid #ffcc00; text-align: left;">
-                            <th style="padding: 10px; width: 15%;">Codice</th>
-                            <th style="padding: 10px; width: 40%;">Descrizione Articolo</th>
-                            <th style="padding: 10px; text-align: center; width: 15%;">Costo Netto (€)</th>
-                            <th style="padding: 10px; text-align: center; width: 15%;">Q.tà da Ordinare</th>
-                            <th style="padding: 10px; text-align: right; width: 15%;">Totale Riga</th>
+                            <th style="text-align: left; padding: 10px;">Codice</th>
+                            <th style="text-align: left; padding: 10px;">Descrizione Articolo</th>
+                            <th style="text-align: center; padding: 10px;">Costo Netto (€)</th>
+                            <th style="text-align: center; padding: 10px;">Q.tà da Ordinare</th>
+                            <th style="text-align: center; padding: 10px;">Totale Riga</th>
                         </tr>
                     </thead>
                     <tbody id="body-articoli-ordine">
@@ -1468,17 +1582,46 @@
                 </div>
                 <div class="crm-form-group" style="flex: 1; margin-bottom: 0;">
                     <label class="crm-label" style="color: #ffcc00;">Spese Accessorie / Bolli (€)</label>
-                    <input type="text" id="carico-spese" class="crm-input" placeholder="0,00" inputmode="decimal" style="text-align: center; color: #ffcc00; font-weight: bold;">
-                    <span style="font-size: 1.1vh; color: #b3d9ff;">Verranno ripartite sul costo dei pezzi.</span>
+                    <input type="text" id="carico-spese" class="crm-input" placeholder="0,00" inputmode="decimal" style="text-align: center; font-size: 2vh;">
+                    <span style="font-size: 1.6vh; color: #b3d9ff;">Verranno ripartite sul costo dei pezzi.</span>
                 </div>
             </div>
 
+            <div style="display: flex; gap: 15px; margin-bottom: 15px; background: rgba(77, 136, 255, 0.1); border: 1px dashed #4d88ff; padding: 15px; border-radius: 6px;">
+                <div class="crm-form-group" style="flex: 2; margin-bottom: 0;">
+                    <label class="crm-label" style="color: #b3d9ff;">Numero Lotto (Opzionale)</label>
+                    <input type="text" id="carico-input-lotto" class="crm-input" placeholder="Es. L-2409XYZ" style="font-size: 1.8vh; border-color: #4d88ff;">
+                </div>
+                <div class="crm-form-group" style="flex: 1; margin-bottom: 0;">
+                    <label class="crm-label" style="color: #b3d9ff;">PAO (Mesi)</label>
+                    <input type="number" id="carico-input-pao" class="crm-input" placeholder="Es. 36" style="text-align: center; font-size: 1.8vh; border-color: #4d88ff;">
+                </div>
+            </div>
+
+            <div style="background: rgba(0, 204, 102, 0.1); border: 1px dashed #00cc66; border-radius: 6px; padding: 10px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between;">
+                <div style="color: #00cc66; font-size: 2.0vh; font-weight: bold;">⚡ CALCOLA VOLUMI (Riporta il totale nella riga del prodotto)</div>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <input type="number" id="carico-calc-flaconi" class="crm-input" placeholder="N. Flaconi" style="margin: 0; width: 100px; text-align: center; height: 30px;">
+                    <span style="color: white; font-weight: bold;">X</span>
+                    <input type="number" id="carico-calc-volume" class="crm-input" placeholder="Vol. (ml)" style="margin: 0; width: 100px; text-align: center; height: 30px;">
+                    <span style="color: white; font-weight: bold;">=</span>
+                    <input type="text" id="carico-calc-risultato" class="crm-input" placeholder="Tot. ml" readonly style="margin: 0; width: 120px; text-align: center; height: 30px; color: #00ffcc; font-weight: bold; background: rgba(0,0,0,0.5);">
+                    <button type="button" class="btn-modal btn-verde" style="margin: 0; padding: 0 15px; height: 30px; font-weight: bold;"
+                            onclick="document.getElementById('carico-calc-risultato').value = (parseFloat(document.getElementById('carico-calc-flaconi').value)||0) * (parseFloat(document.getElementById('carico-calc-volume').value)||0);">
+                        CALCOLA
+                    </button>
+                    <button type="button" class="btn-modal btn-grigio" style="margin: 0; padding: 0 10px; height: 30px;" title="Pulisci calcolatrice"
+                            onclick="document.getElementById('carico-calc-flaconi').value=''; document.getElementById('carico-calc-volume').value=''; document.getElementById('carico-calc-risultato').value='';">
+                        CANC
+                    </button>
+                </div>
+            </div>
             <div style="flex-grow: 1; background: rgba(0,0,0,0.4); border-radius: 6px; overflow-y: auto; padding: 10px; margin-bottom: 15px;">
                 <table style="width: 100%; border-collapse: collapse; color: white; font-size: 1.6vh;">
                     <thead>
                         <tr style="border-bottom: 2px solid #00cc66; text-align: left;">
-                            <th style="padding: 10px; width: 15%;">Codice</th>
-                            <th style="padding: 10px; width: 45%;">Descrizione Articolo</th>
+                            <th style="padding: 10px; text-align: left; width: 15%;">Codice</th>
+                            <th style="padding: 10px; text-align: left; width: 45%;">Descrizione Articolo</th>
                             <th style="padding: 10px; text-align: center; width: 15%;">Attesi</th>
                             <th style="padding: 10px; text-align: center; width: 25%; color: #00cc66;">Ricevuti (Spunta)</th>
                         </tr>
@@ -1606,8 +1749,8 @@
 
     <div class="modal-overlay overlay-primo-piano" id="modal-emissione-giftcard" style="display: none; z-index: 9800;">
         <div class="modal-box" style="width: 400px; border-color: #ff3366;">
-            <div class="modal-titolo" style="color: #ff3366;">🎁 EMETTI GIFT CARD</div>
-            <p style="color: #b3d9ff; font-size: 1.6vh; margin-bottom: 15px;">Inserisci il valore della nuova Gift Card. Verrà aggiunta allo scontrino corrente.</p>
+            <div class="modal-titolo" style="color: #ff3366; font-size: 4vh;">🎁 EMETTI GIFT CARD</div>
+            <p style="color: #b3d9ff; font-size: 1.7vh; margin-bottom: 15px;">Inserisci il valore della nuova Gift Card. Verrà aggiunta allo scontrino corrente.</p>
             <div class="crm-form-group">
                 <label class="crm-label">Importo Gift Card (€)</label>
                 <input type="text" id="input-importo-giftcard" class="crm-input" placeholder="Es. 50,00" inputmode="decimal" style="font-size: 3vh; text-align: center; height: 50px; color: #00ffcc; font-weight: bold;">
@@ -1659,7 +1802,7 @@
         <div class="modal-box modal-grande modal-full" style="width: 100vw; max-width: 100vw; height: 100vh; max-height: 100vh; margin: 0; border-radius: 0; border: none; display: flex; flex-direction: column; box-sizing: border-box; background: #001229; padding: 20px;">
 
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 15px; margin-bottom: 20px;">
-                <div class="modal-titolo" style="font-size: 3vh; margin: 0; color: #ff3366; letter-spacing: 1px;">💳 GESTIONE E CONTROLLO GIFT CARD</div>
+                <div class="modal-titolo" style="font-size: 3vh; margin: 0; letter-spacing: 1px;">💳 GESTIONE GIFT CARD E BUONI RESO</div>
                 <button class="btn-modal btn-grigio" onclick="chiudiModale('modal-dashboard-giftcard'); apriModale('modal-menu-principale')" style="padding: 5px 15px;">CHIUDI</button>
             </div>
 
@@ -1675,26 +1818,30 @@
 
                 <div style="flex: 2; display: flex; gap: 15px;">
                     <div style="flex: 1; background: rgba(255,51,102,0.1); padding: 15px; border-radius: 8px; border: 1px solid #ff3366; display: flex; flex-direction: column; justify-content: center; text-align: center;">
-                        <div style="font-size: 1.6vh; color: #b3d9ff; font-weight: bold;">CARTE ATTIVE</div>
+                        <div style="font-size: 1.6vh; color: #b3d9ff; font-weight: bold;">TICKET ATTIVI</div>
                         <div id="dash-gc-attive" style="font-size: 4vh; font-weight: bold; color: #fff; text-shadow: 0 0 10px rgba(255,255,255,0.3);">0</div>
                     </div>
                     <div style="flex: 1.5; background: rgba(255,51,102,0.1); padding: 15px; border-radius: 8px; border: 1px solid #ff3366; display: flex; flex-direction: column; justify-content: center; text-align: center;">
-                        <div style="font-size: 1.6vh; color: #b3d9ff; font-weight: bold;">DEBITO VERSO CLIENTI</div>
+                        <div style="font-size: 1.6vh; color: #b3d9ff; font-weight: bold;">TOTALE DEBITO CLIENTI</div>
                         <div id="dash-gc-debito" style="font-size: 4vh; font-weight: bold; color: #ffcc00; text-shadow: 0 0 10px rgba(255,204,0,0.3);">€ 0,00</div>
                     </div>
                 </div>
 
-                <div style="flex: 1.5; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; justify-content: center; gap: 10px;">
+                <div style="flex: 2; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; justify-content: center; gap: 10px;">
                     <div style="font-size: 1.4vh; color: #b3d9ff; font-weight: bold;">⚙️ FILTRI DI RICERCA</div>
                     <div style="display: flex; gap: 10px;">
-                        <select id="filtro-stato-gc" class="crm-input" style="margin: 0; height: 40px; font-size: 1.6vh; flex: 1;" onchange="filtraDashboardGiftCard()">
-                            <option value="TUTTE">Tutte le Carte</option>
-                            <option value="ATTIVA">Solo Attive</option>
-                            <option value="ESAURITA">Esaurite</option>
-                            <option value="SCADUTE_CREDITO">Scadute con Saldo</option>
+                        <select id="filtro-tipo-gc" class="crm-input" style="margin: 0; height: 40px; font-size: 1.6vh; flex: 1; background: #002b5e;" onchange="filtraDashboardGiftCard()">
+                            <option value="TUTTI">Tutti (Gift & Resi)</option>
+                            <option value="GIFT_CARD">🎁 Solo Gift Card</option>
+                            <option value="RESO">🔄 Solo Buoni Reso</option>
                         </select>
-                        <input type="text" id="filtro-ricerca-gc" class="crm-input" placeholder="Cerca..." style="margin: 0; height: 40px; font-size: 1.6vh; flex: 1;" oninput="filtraDashboardGiftCard()">
+                        <select id="filtro-stato-gc" class="crm-input" style="margin: 0; height: 40px; font-size: 1.6vh; flex: 1;" onchange="filtraDashboardGiftCard()">
+                            <option value="TUTTE">Tutti gli Stati</option>
+                            <option value="ATTIVA">Solo Attivi</option>
+                            <option value="ESAURITA">Esauriti / Riscattati</option>
+                        </select>
                     </div>
+                    <input type="text" id="filtro-ricerca-gc" class="crm-input" placeholder="Cerca codice o importo..." style="margin: 0; height: 35px; font-size: 1.6vh; width: 100%;" oninput="filtraDashboardGiftCard()">
                 </div>
             </div>
 
@@ -1723,15 +1870,15 @@
             <div id="det-gc-codice" style="font-size: 2.5vh; font-family: monospace; letter-spacing: 2px; margin-bottom: 15px;"></div>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; text-align: left; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 6px; margin-bottom: 15px;">
-                <div><span style="color:#b3d9ff; font-size:1.3vh;">Stato:</span><br><b id="det-gc-stato"></b></div>
-                <div><span style="color:#b3d9ff; font-size:1.3vh;">Saldo Attuale:</span><br><b id="det-gc-saldo" style="color:#ffcc00; font-size: 2.2vh;"></b></div>
-                <div><span style="color:#b3d9ff; font-size:1.3vh;">Emissione:</span><br><b id="det-gc-em"></b></div>
-                <div><span style="color:#b3d9ff; font-size:1.3vh;">Scadenza:</span><br><b id="det-gc-sc"></b></div>
+                <div><span style="color:#b3d9ff; font-size:1.6vh;">Stato:</span><br><b id="det-gc-stato" style="font-size: 2.5vh;"></b></div>
+                <div><span style="color:#b3d9ff; font-size:1.6vh;">Saldo Attuale:</span><br><b id="det-gc-saldo" style="color:#ffcc00; font-size: 2.5vh;"></b></div>
+                <div><span style="color:#b3d9ff; font-size:1.6vh;">Emissione:</span><br><b id="det-gc-em" style="font-size: 2.5vh;"></b></div>
+                <div><span style="color:#b3d9ff; font-size:1.6vh;">Scadenza:</span><br><b id="det-gc-sc" style="font-size: 2.5vh;"></b></div>
             </div>
 
             <div style="text-align: left; margin-bottom: 15px;">
-                <div style="color:#b3d9ff; font-size:1.3vh; margin-bottom: 5px;">📜 Storico Movimenti:</div>
-                <div id="det-gc-storico" style="max-height: 120px; overflow-y: auto; background: #001229; padding: 8px; border-radius: 4px; font-size: 1.4vh; border: 1px solid rgba(255,255,255,0.1);"></div>
+                <div style="color:#b3d9ff; font-size:1.6vh; margin-bottom: 5px;">📜 Storico Movimenti:</div>
+                <div id="det-gc-storico" style="max-height: 120px; overflow-y: auto; background: #001229; padding: 8px; border-radius: 4px; font-size: 1.5vh; border: 1px solid rgba(255,255,255,0.1);"></div>
             </div>
 
             <div style="border-top: 1px dashed rgba(255,255,255,0.2); padding-top: 15px; margin-bottom: 15px; text-align: left;">
@@ -1749,9 +1896,205 @@
         </div>
     </div>
 
+    <!-- 📋 MODULO INVENTARIO E RICONCILIAZIONE -->
+    <div class="modal-overlay" id="modal-inventario" style="display: none; z-index: 9600;">
+        <div class="modal-box modal-grande modal-full" style="width: 100vw; max-width: 100vw; height: 100vh; max-height: 100vh; margin: 0; border-radius: 0; border: none; display: flex; flex-direction: column; box-sizing: border-box;">
+
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #9933ff; padding-bottom: 10px; margin-bottom: 15px;">
+                <div class="modal-titolo" style="font-size: 3vh; margin: 0; color: #d9b3ff;">📋 STAMPA FOGLIO E RICONCILIAZIONE INVENTARIO</div>
+                <button class="btn-modal btn-grigio" onclick="chiudiModale('modal-inventario'); apriModale('modal-menu-principale');" style="padding: 5px 15px;">CHIUDI</button>
+            </div>
+
+            <!-- SEZIONE FILTRI PRE-STAMPA E RICERCA -->
+            <div style="display: flex; gap: 15px; margin-bottom: 15px; background: rgba(153, 51, 255, 0.1); padding: 15px; border-radius: 6px; border: 1px solid #9933ff; flex-shrink: 0;">
+                <div class="crm-form-group" style="flex: 1; margin-bottom: 0;">
+                    <label class="crm-label" style="color: #d9b3ff;">Filtra Categoria</label>
+                    <select id="inv-filtro-cat" class="crm-input" style="margin: 0;"></select>
+                </div>
+                <div class="crm-form-group" style="flex: 1; margin-bottom: 0;">
+                    <label class="crm-label" style="color: #d9b3ff;">Filtra Fornitore / Brand</label>
+                    <select id="inv-filtro-brand" class="crm-input" style="margin: 0;"></select>
+                </div>
+                <div class="crm-form-group" style="flex: 1; margin-bottom: 0;">
+                    <label class="crm-label" style="color: #d9b3ff;">Ordina Elenco Per</label>
+                    <select id="inv-ordinamento" class="crm-input" style="margin: 0; border-color: #ffcc00;">
+                        <option value="UBICAZIONE">Posizione / Scaffale (Consigliato)</option>
+                        <option value="NOME">Ordine Alfabetico (A-Z)</option>
+                        <option value="CATEGORIA">Categoria Merceologica</option>
+                    </select>
+                </div>
+                <div style="flex: 1.5; display: flex; gap: 10px; align-items: flex-end;">
+                    <button class="btn-modal" style="background: #4d88ff; color: black; flex: 1; margin: 0; height: 45px; font-weight: bold;" onclick="stampaFoglioInventario()">🖨️ STAMPA PDF</button>
+                    <button class="btn-modal btn-verde" style="flex: 1; margin: 0; height: 45px; font-weight: bold;" onclick="avviaRiconciliazione()">📝 RICONCILIA</button>
+                </div>
+            </div>
+
+            <!-- SEZIONE RICONCILIAZIONE A SCHERMO -->
+            <div id="inv-area-riconciliazione" style="display: none; flex-direction: column; flex-grow: 1; overflow: hidden;">
+
+                <div style="display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.5); padding: 10px 15px; border-radius: 6px; margin-bottom: 25px; border-left: 4px solid #00cc66;">
+                    <div style="color: #ccc; font-size: 1.8vh; margin: 0;">Modifica solo le quantità reali rilevate. Le righe modificate diventeranno gialle.</div>
+                    <div style="text-align: right;">
+                        <div style="font-size: 1.4vh; color: #888; text-transform: uppercase;">Differenza Economica Totale (Costo)</div>
+                        <div id="inv-diff-valore" style="font-size: 2.5vh; font-weight: bold; color: white;">€ 0,00</div>
+                    </div>
+                </div>
+
+                <div style="flex-grow: 1; background: rgba(0,0,0,0.4); border-radius: 6px; overflow-y: auto; position: relative;">
+                    <table style="width: 100%; border-collapse: collapse; color: white; font-size: 1.9vh;">
+                        <thead style="position: sticky; top: 0; z-index: 20; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+                            <tr style="text-align: left;">
+                                <th style="padding: 18px 15px; width: 10%; background: #001a33; border-bottom: 3px solid #00cc66;">Pos.</th>
+                                <th style="padding: 18px 15px; width: 15%; background: #001a33; border-bottom: 3px solid #00cc66;">Codice EAN</th>
+                                <th style="padding: 18px 15px; width: 35%; background: #001a33; border-bottom: 3px solid #00cc66;">Descrizione Articolo</th>
+                                <th style="padding: 18px 15px; text-align: center; width: 10%; background: #001a33; border-bottom: 3px solid #00cc66;">Q.tà Sistema</th>
+                                <th style="padding: 18px 15px; text-align: center; width: 15%; background: #001a33; border-bottom: 3px solid #00cc66;">Q.tà Reale</th>
+                                <th style="padding: 18px 15px; text-align: center; width: 15%; background: #001a33; border-bottom: 3px solid #00cc66;">Diff. Valore</th>
+                            </tr>
+                        </thead>
+                        <tbody id="body-riconciliazione"></tbody>
+                    </table>
+                </div>
+
+                <div class="modal-bottoniera" style="margin-top: 15px; flex-shrink: 0;">
+                    <button class="btn-modal btn-grigio" onclick="document.getElementById('inv-area-riconciliazione').style.display='none'" style="flex: 1;">ANNULLA</button>
+                    <button class="btn-modal btn-verde" onclick="confermaSalvataggioRiconciliazione()" style="flex: 2; padding: 15px; font-size: 2vh;">💾 SALVA RETTIFICHE E AGGIORNA MAGAZZINO</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- 📜 MODULO STORICO RETTIFICHE SINGOLO ARTICOLO -->
+    <div class="modal-overlay overlay-primo-piano" id="modal-storico-rettifiche" style="display: none; z-index: 9750;">
+        <div class="modal-box" style="width: 700px; max-width: 95vw; border-color: #ffcc00;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 10px; margin-bottom: 15px;">
+                <div class="modal-titolo" style="font-size: 2.5vh; margin: 0; color: #ffcc00;">📜 STORICO RETTIFICHE INVENTARIO</div>
+                <button class="btn-modal btn-grigio" onclick="chiudiModale('modal-storico-rettifiche')" style="padding: 5px 15px;">CHIUDI</button>
+            </div>
+
+            <div style="font-size: 1.6vh; color: #b3d9ff; margin-bottom: 10px;">Articolo: <b id="log-ret-articolo" style="color: white; font-size: 1.8vh;">-</b></div>
+
+            <div style="flex-grow: 1; background: rgba(0,0,0,0.4); border-radius: 6px; overflow-y: auto; padding: 10px; max-height: 400px;">
+                <table style="width: 100%; border-collapse: collapse; color: white; font-size: 1.6vh;">
+                    <thead style="position: sticky; top: 0; background: #001a33; z-index: 10;">
+                        <tr style="border-bottom: 2px solid #ffcc00; text-align: left;">
+                            <th style="padding: 8px;">Data e Ora</th>
+                            <th style="padding: 8px;">Operatore</th>
+                            <th style="padding: 8px; text-align: center;">Q.tà Prec.</th>
+                            <th style="padding: 8px; text-align: center; color: #ffcc00;">Q.tà Nuova</th>
+                            <th style="padding: 8px; text-align: right;">Diff. Valore</th>
+                        </tr>
+                    </thead>
+                    <tbody id="body-storico-rettifiche"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay overlay-primo-piano" id="modal-autorizzazione" style="display: none; z-index: 10005 !important;">
+        <div class="modal-box" style="width: 400px; border-color: #ff4d4d; text-align: center;">
+            <div class="modal-titolo" style="color: #ff4d4d;">🔑 AUTORIZZAZIONE RICHIESTA</div>
+            <p id="testo-autorizzazione" style="color: #b3d9ff; font-size: 1.5vh; margin-bottom: 20px;">Operazione riservata a Manager o Admin.</p>
+            <input type="password" id="input-pin-admin" class="crm-input" placeholder="PIN Supervisore" style="text-align: center; font-size: 3vh; width: 80%; margin: 0 auto 20px auto;">
+            <div class="modal-bottoniera">
+                <button class="btn-modal btn-grigio" onclick="chiudiModale('modal-autorizzazione')">ANNULLA</button>
+                <button class="btn-modal btn-rosso" onclick="verificaAutorizzazione()">SBLOCCA</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay overlay-primo-piano" id="modal-gestione-operatori" style="display: none; z-index: 9700;">
+        <div class="modal-box modal-grande modal-full" style="width: 100vw; max-width: 100vw; height: 100vh; max-height: 100vh; margin: 0; border-radius: 0; border: none; display: flex; flex-direction: column; box-sizing: border-box;">
+
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #00cc66; padding-bottom: 10px; margin-bottom: 20px;">
+                <div class="modal-titolo" style="font-size: 3vh; margin: 0; color: #00cc66;">👥 GESTIONE OPERATORI E PERMESSI</div>
+                <button class="btn-modal btn-grigio" onclick="chiudiModale('modal-gestione-operatori'); apriModale('modal-menu-principale');" style="padding: 5px 15px;">CHIUDI GESTIONE</button>
+            </div>
+
+            <div style="display: flex; gap: 25px; flex-grow: 1; overflow: hidden; flex-wrap: wrap;">
+
+                <div style="flex: 1; min-width: 350px; background: rgba(0,0,0,0.3); padding: 25px; border-radius: 8px; border: 1px solid #333; display: flex; flex-direction: column;">
+                    <h3 id="titolo-form-operatore" style="color: #b3d9ff; margin-top: 0; margin-bottom: 20px; font-size: 2.5vh;">Nuovo Dipendente</h3>
+
+                    <input type="text" id="op-nuovo-nome" class="crm-input" placeholder="Nome Operatore (es. Marco)" maxlength="20" style="margin-bottom: 20px; font-size: 2vh; padding: 15px;">
+
+                    <div style="display: flex; gap: 15px; margin-bottom: 20px;">
+                        <div style="flex: 1;">
+                            <label class="crm-label" style="color: #888;">PIN Accesso (4 cifre)</label>
+                            <input type="password" id="op-nuovo-pin" class="crm-input" placeholder="****" maxlength="4" oninput="this.value = this.value.replace(/[^0-9]/g, '')" style="text-align: center; font-size: 3vh; letter-spacing: 10px; padding: 10px;">
+                        </div>
+                        <div style="flex: 1;">
+                            <label class="crm-label" style="color: #888;">Max Sconto (%)</label>
+                            <input type="number" id="op-nuovo-sconto" class="crm-input" value="5" min="0" max="100" style="text-align: center; font-size: 3vh; padding: 10px;">
+                        </div>
+                    </div>
+
+                    <label class="crm-label" style="color: #888;">Ruolo e Permessi di Sistema</label>
+                    <select id="op-nuovo-ruolo" class="crm-input" onchange="impostaScontoDefaultRuolo()" style="font-size: 2vh; padding: 15px;">
+                        <option value="SALES">SALES - Solo vendita (No magazzino/teorico)</option>
+                        <option value="MANAGER">MANAGER - Cassa + Gestione Resi/Magazzino</option>
+                        <option value="ADMIN">ADMIN - Titolare (Accesso Totale)</option>
+                    </select>
+
+                    <div style="flex-grow: 1;"></div> <div style="display: flex; gap: 10px; margin-top: 25px;">
+                        <button id="btn-annulla-modifica-op" class="btn-modal btn-grigio" style="flex: 1; display: none; padding: 20px; font-size: 1.8vh; margin: 0;" onclick="annullaModificaOperatore()">ANNULLA</button>
+                        <button id="btn-salva-operatore" class="btn-modal btn-verde" style="flex: 2; padding: 20px; font-size: 2vh; font-weight: bold; margin: 0;" onclick="salvaNuovoOperatore()">➕ AGGIUNGI OPERATORE</button>
+                    </div>
+                </div>
+
+                <div style="flex: 2; min-width: 400px; background: rgba(0,0,0,0.5); border-radius: 8px; padding: 25px; display: flex; flex-direction: column; overflow: hidden; border: 1px solid #1a1a1a;">
+                    <h3 style="color: #00cc66; margin-top: 0; font-size: 2.5vh; border-bottom: 1px solid rgba(0, 204, 102, 0.3); padding-bottom: 15px; margin-bottom: 15px;">Operatori Attivi nel Sistema</h3>
+
+                    <div id="lista-operatori-attivi" style="flex-grow: 1; overflow-y: auto; padding-right: 15px;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay overlay-primo-piano" id="modal-stampa-etichette" style="display: none; z-index: 2500;">
+        <div class="modal-box modal-grande" style="width: 850px; border-color: #b3d9ff; display: flex; flex-direction: column;">
+            <div class="modal-titolo" style="color: #b3d9ff; margin-bottom: 20px;">🖨️ CODA DI STAMPA ETICHETTE</div>
+
+            <div style="display: flex; gap: 20px; flex-grow: 1;">
+                <div style="flex: 1.5; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px solid #333; display: flex; flex-direction: column;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #444; padding-bottom: 10px; margin-bottom: 10px;">
+                        <span style="color: #00ffcc; font-weight: bold; font-size: 1.8vh;">Articoli in coda</span>
+                        <button class="btn-modal btn-rosso" style="padding: 4px 10px; margin: 0; font-size: 1.2vh;" onclick="svuotaCodaStampa()">🗑️ Svuota</button>
+                    </div>
+
+                    <div id="lista-coda-stampa" style="flex-grow: 1; overflow-y: auto; max-height: 350px; padding-right: 10px;">
+                    </div>
+                </div>
+
+                <div style="flex: 1; background: rgba(0,0,0,0.3); padding: 15px; border-radius: 8px; border: 1px solid #333; display: flex; flex-direction: column; align-items: center;">
+                    <label class="crm-label" style="color: #ffcc00; width: 100%; text-align: left;">Formato Etichetta (Layout):</label>
+                    <select id="stampa-layout" class="crm-input" style="width: 100%; margin-bottom: 20px; font-size: 1.8vh; padding: 10px;" onchange="aggiornaAnteprimaStampa()">
+                        <option value="standard">Standard (Codice + Prezzo)</option>
+                        <option value="promo">Promo (Prezzo Vecchio Barrato)</option>
+                        <option value="small">Piccola (Solo Barcode compatto)</option>
+                    </select>
+
+                    <span style="color: #888; font-size: 1.4vh; margin-bottom: 10px;">Anteprima prima in lista:</span>
+                    <div id="anteprima-etichetta-container" style="background: white; padding: 20px; border-radius: 4px; box-shadow: 0 0 15px rgba(0,0,0,0.8); min-height: 120px; display: flex; justify-content: center; align-items: center; width: 100%;">
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-bottoniera" style="margin-top: 25px;">
+                <button class="btn-modal btn-grigio" onclick="chiudiModale('modal-stampa-etichette')">CHIUDI CODA</button>
+                <button class="btn-modal btn-blu" onclick="eseguiStampaEtichette()" style="font-weight: bold; font-size: 2vh; padding: 15px 30px;">🖨️ STAMPA TUTTO ORA</button>
+            </div>
+        </div>
+    </div>
+
     <div id="print-area"></div>
 
     <script src="jsbarcode.js"></script>
+    <!-- Libreria per la Business Intelligence (Grafici) -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="app.js"></script>
     <script>
         if ('serviceWorker' in navigator) {
